@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HEAL System Architecture Block Diagram</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    font-family: 'Arial', sans-serif;
+  }
+  svg {
+    display: block;
+  }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="780" viewBox="0 0 860 780">
+
+  <!-- Background -->
+  <rect width="860" height="780" fill="#ffffff"/>
+
+  <!-- ===== TITLE ===== -->
+  <text x="430" y="36" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#1a1a2e">HEAL — System Architecture Block Diagram</text>
+
+  <!-- ===== ROW 1: User Input Interface ===== -->
+  <!-- Box -->
+  <rect x="265" y="60" width="330" height="58" rx="10" ry="10" fill="#C5B3E6" stroke="#7B5EA7" stroke-width="2"/>
+  <text x="430" y="84" text-anchor="middle" font-family="Arial" font-size="15" font-weight="bold" fill="#2c1654">User Input Interface</text>
+  <text x="430" y="104" text-anchor="middle" font-family="Arial" font-size="11" fill="#4a2e7a">Accepts Symptoms · Lab Reports · Free-text Queries</text>
+
+  <!-- Arrow from Row1 → left branch -->
+  <line x1="360" y1="118" x2="210" y2="178" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <!-- Arrow from Row1 → right branch -->
+  <line x1="500" y1="118" x2="650" y2="178" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- ===== ROW 2: Two branches ===== -->
+  <!-- Left: Structured Symptom -->
+  <rect x="80" y="178" width="260" height="58" rx="10" ry="10" fill="#AED6F1" stroke="#2E86C1" stroke-width="2"/>
+  <text x="210" y="202" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#1a3c5e">Structured Symptom</text>
+  <text x="210" y="221" text-anchor="middle" font-family="Arial" font-size="11" fill="#1a3c5e">Search / Chip Select</text>
+
+  <!-- Right: NLP Free-Text -->
+  <rect x="520" y="178" width="260" height="58" rx="10" ry="10" fill="#AED6F1" stroke="#2E86C1" stroke-width="2"/>
+  <text x="650" y="202" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#1a3c5e">NLP Free-Text</text>
+  <text x="650" y="221" text-anchor="middle" font-family="Arial" font-size="11" fill="#1a3c5e">Tri-Head Transformer</text>
+
+  <!-- Arrow from Left branch → Row3 -->
+  <line x1="240" y1="236" x2="350" y2="296" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <!-- Arrow from Right branch → Row3 -->
+  <line x1="620" y1="236" x2="510" y2="296" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- ===== ROW 3: Hybrid AI Scoring Engine ===== -->
+  <rect x="210" y="296" width="440" height="60" rx="10" ry="10" fill="#C5B3E6" stroke="#7B5EA7" stroke-width="2"/>
+  <text x="430" y="321" text-anchor="middle" font-family="Arial" font-size="15" font-weight="bold" fill="#2c1654">Hybrid AI Scoring Engine</text>
+  <text x="430" y="342" text-anchor="middle" font-family="Arial" font-size="11" fill="#4a2e7a">Weighted symptom matching · 500+ dataset</text>
+
+  <!-- Arrow Row3 → Row4 center -->
+  <line x1="430" y1="356" x2="430" y2="396" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- ===== ROW 4: Lab Upload (left) + Hybrid Logic Merge (center) ===== -->
+  <!-- Lab Upload box -->
+  <rect x="50" y="396" width="210" height="58" rx="10" ry="10" fill="#AED6F1" stroke="#2E86C1" stroke-width="2"/>
+  <text x="155" y="420" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#1a3c5e">Lab Report Upload</text>
+  <text x="155" y="439" text-anchor="middle" font-family="Arial" font-size="11" fill="#1a3c5e">(Optional PDF / Image)</text>
+
+  <!-- Arrow Lab → Hybrid Logic Merge -->
+  <line x1="260" y1="425" x2="310" y2="425" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- Hybrid Logic Merge -->
+  <rect x="310" y="396" width="370" height="58" rx="10" ry="10" fill="#F1948A" stroke="#C0392B" stroke-width="2"/>
+  <text x="495" y="420" text-anchor="middle" font-family="Arial" font-size="15" font-weight="bold" fill="#4a0a0a">Hybrid Logic Merge</text>
+  <text x="495" y="440" text-anchor="middle" font-family="Arial" font-size="11" fill="#4a0a0a">Pathognomonic boosters · Conflict resolution</text>
+
+  <!-- Arrow Row4 → Row5 center -->
+  <line x1="495" y1="454" x2="495" y2="494" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <!-- Also arrow from center of Hybrid Logic Merge aligned -->
+  <!-- Adjust: Pinpoint is centered at 430 -->
+  <line x1="430" y1="454" x2="430" y2="494" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- ===== ROW 5: Vision AI/OCR (left) + Pinpoint Dashboard (center) ===== -->
+  <!-- Vision AI box -->
+  <rect x="50" y="494" width="210" height="58" rx="10" ry="10" fill="#AED6F1" stroke="#2E86C1" stroke-width="2"/>
+  <text x="155" y="518" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#1a3c5e">Vision AI / OCR</text>
+  <text x="155" y="537" text-anchor="middle" font-family="Arial" font-size="11" fill="#1a3c5e">Gemini · Atlas Dict</text>
+
+  <!-- Arrow Vision → Pinpoint -->
+  <line x1="260" y1="523" x2="310" y2="523" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- Pinpoint Dashboard -->
+  <rect x="310" y="494" width="450" height="58" rx="10" ry="10" fill="#A9DFBF" stroke="#1E8449" stroke-width="2"/>
+  <text x="535" y="518" text-anchor="middle" font-family="Arial" font-size="15" font-weight="bold" fill="#0d3b22">Pinpoint Dashboard</text>
+  <text x="535" y="538" text-anchor="middle" font-family="Arial" font-size="11" fill="#0d3b22">Confidence gauge · Urgency badge · Vitals matrix</text>
+
+  <!-- Arrows from Pinpoint → Row6 three boxes -->
+  <line x1="390" y1="552" x2="210" y2="612" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="535" y1="552" x2="535" y2="612" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="680" y1="552" x2="720" y2="612" stroke="#444" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- ===== ROW 6: Three output boxes ===== -->
+  <!-- Clinical Reasoning -->
+  <rect x="60" y="612" width="230" height="58" rx="10" ry="10" fill="#AED6F1" stroke="#2E86C1" stroke-width="2"/>
+  <text x="175" y="636" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#1a3c5e">Clinical Reasoning</text>
+  <text x="175" y="655" text-anchor="middle" font-family="Arial" font-size="11" fill="#1a3c5e">XAI / SHAP Audit</text>
+
+  <!-- Precautions & Urgency Alerts -->
+  <rect x="315" y="612" width="240" height="58" rx="10" ry="10" fill="#AED6F1" stroke="#2E86C1" stroke-width="2"/>
+  <text x="435" y="633" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#1a3c5e">Precautions &amp;</text>
+  <text x="435" y="651" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#1a3c5e">Urgency Alerts</text>
+
+  <!-- Hospital Finder -->
+  <rect x="580" y="612" width="220" height="58" rx="10" ry="10" fill="#AED6F1" stroke="#2E86C1" stroke-width="2"/>
+  <text x="690" y="636" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#1a3c5e">Hospital Finder</text>
+  <text x="690" y="655" text-anchor="middle" font-family="Arial" font-size="11" fill="#1a3c5e">Kerala District</text>
+
+  <!-- ===== LEGEND ===== -->
+  <rect x="60" y="710" width="740" height="44" rx="8" fill="#f5f5f5" stroke="#cccccc" stroke-width="1"/>
+  <rect x="80" y="724" width="16" height="16" rx="3" fill="#C5B3E6" stroke="#7B5EA7" stroke-width="1.5"/>
+  <text x="102" y="736" font-family="Arial" font-size="11" fill="#333">Core AI Engine</text>
+  <rect x="220" y="724" width="16" height="16" rx="3" fill="#AED6F1" stroke="#2E86C1" stroke-width="1.5"/>
+  <text x="242" y="736" font-family="Arial" font-size="11" fill="#333">Input / Output Module</text>
+  <rect x="400" y="724" width="16" height="16" rx="3" fill="#F1948A" stroke="#C0392B" stroke-width="1.5"/>
+  <text x="422" y="736" font-family="Arial" font-size="11" fill="#333">Logic Merge Layer</text>
+  <rect x="560" y="724" width="16" height="16" rx="3" fill="#A9DFBF" stroke="#1E8449" stroke-width="1.5"/>
+  <text x="582" y="736" font-family="Arial" font-size="11" fill="#333">Presentation Layer</text>
+
+  <!-- ===== ARROWHEAD MARKER ===== -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#444"/>
+    </marker>
+  </defs>
+
+</svg>
+</body>
+</html>

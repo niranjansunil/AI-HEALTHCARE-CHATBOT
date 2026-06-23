@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heal — Clinical Feedback</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #080d1a; /* Matching Landing Page */
+            color: #E2E8F0; 
+            overflow-x: hidden;
+            height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== PAPER SLIDE TRANSITION ===== */
+        .page-wrapper {
+            animation: paperSlide 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            display: flex; flex-direction: column; align-items: center; padding: 5rem 2rem;
+            min-height: 100vh;
+        }
+        @keyframes paperSlide {
+            0% { transform: translateY(-100vh); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ===== TOP NAVIGATION BAR ===== */
+        .top-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            height: 64px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 3rem; background: #0F172A; border-bottom: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .nav-logo { font-family: 'Outfit'; font-size: 1.25rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.02em; }
+        .back-link {
+            display: flex; align-items: center; gap: 0.5rem;
+            color: #94A3B8; text-decoration: none; font-size: 0.85rem; font-weight: 600;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: #3384FB; }
+
+        /* ===== CLINICAL FEEDBACK FORM ===== */
+        .feedback-form-container {
+            width: 100%; max-width: 640px; background: #0F172A;
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            padding: 4rem; position: relative;
+        }
+
+        .form-header { margin-bottom: 3.5rem; }
+        .form-header h1 { font-family: 'Outfit'; font-size: 2.25rem; font-weight: 900; color: #FFFFFF; margin-bottom: 0.5rem; }
+        .form-header p { color: #94A3B8; font-weight: 500; font-size: 1rem; }
+
+        .form-group { margin-bottom: 2.5rem; transition: opacity 0.3s; }
+        .form-label { display: block; font-size: 0.85rem; font-weight: 700; color: #E2E8F0; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.02em; }
+        
+        /* Input Fields - High Contrast Dark */
+        .clinical-input, .clinical-textarea {
+            width: 100%; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+            background: #1E293B; padding: 1rem; color: #FFFFFF;
+            font-family: inherit; font-size: 1rem; outline: none; transition: all 0.2s;
+        }
+        .clinical-input:focus, .clinical-textarea:focus {
+            background: #0F172A; border-color: #3384FB;
+            box-shadow: 0 0 0 2px rgba(51, 132, 251, 0.1);
+        }
+
+        /* Focus Inactivity Dimming */
+        .focus-active .form-group:not(.active) {
+            opacity: 0.4;
+        }
+
+        /* NUMERIC RATING BOXES */
+        .rating-wrap { display: flex; gap: 0.75rem; margin-top: 1rem; }
+        .rating-box {
+            width: 44px; height: 44px; border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Outfit'; font-weight: 700; font-size: 1.1rem;
+            background: #1E293B; color: #94A3B8; cursor: pointer; transition: all 0.2s;
+            border-radius: 8px;
+        }
+        .rating-box:hover { border-color: #3384FB; color: #3384FB; }
+        .rating-box.selected { background: #3384FB; border-color: #3384FB; color: #FFFFFF; }
+
+        /* THE SUBMIT BUTTON */
+        .submit-action {
+            width: 100%; background: #3384FB; color: #FFFFFF; border: none;
+            padding: 1.25rem; border-radius: 10px; font-family: 'Outfit';
+            font-size: 1rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.1em; cursor: pointer; transition: background 0.2s;
+            margin-top: 1rem;
+        }
+        .submit-action:hover { background: #1D65F0; }
+
+        /* Layout rows */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+        /* Success State */
+        .success-overlay {
+            position: fixed; inset: 0; z-index: 500; background: #080D1A;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center;
+        }
+        .success-card {
+            background: #0F172A; border: 1px solid rgba(255,255,255,0.1); padding: 4rem;
+            max-width: 500px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+        }
+        .check-circle { width: 56px; height: 56px; color: #3384FB; margin-bottom: 2rem; }
+
+    </style>
+</head>
+<body id="mainBody">
+    <nav class="top-nav">
+        <div class="nav-logo">Heal Communication Portal</div>
+        <a href="landing.html" class="back-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Exit Terminal
+        </a>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="feedback-form-container" id="feedbackContainer">
+            <header class="form-header">
+                <h1>Clinical Feedback</h1>
+                <p>Submit protocol improvements and diagnostic review summaries.</p>
+            </header>
+
+            <form id="evaluationForm" onsubmit="handleSubmit(event)">
+                <div class="form-row">
+                    <div class="form-group" onclick="setActive(this)">
+                        <label class="form-label">Full Name / Identifier</label>
+                        <input type="text" class="clinical-input" placeholder="Enter formal identity..." required>
+                    </div>
+                    <div class="form-group" onclick="setActive(this)">
+                        <label class="form-label">Patient Age</label>
+                        <input type="number" class="clinical-input" placeholder="Years" required>
+                    </div>
+                </div>
+
+                <div class="form-group" onclick="setActive(this)">
+                    <label class="form-label">System Performance (1–5)</label>
+                    <div class="rating-wrap" id="ratingWrap">
+                        <div class="rating-box" data-val="1">1</div>
+                        <div class="rating-box" data-val="2">2</div>
+                        <div class="rating-box" data-val="3">3</div>
+                        <div class="rating-box" data-val="4">4</div>
+                        <div class="rating-box" data-val="5">5</div>
+                    </div>
+                </div>
+
+                <div class="form-group" onclick="setActive(this)">
+                    <label class="form-label">System Optimization Notes</label>
+                    <textarea class="clinical-textarea" rows="5" placeholder="Document specific logic optimization or accuracy findings..." required></textarea>
+                </div>
+
+                <div class="form-group" onclick="setActive(this)">
+                    <label class="form-label">Proposed Expansion Requests</label>
+                    <input type="text" class="clinical-input" placeholder="Identify new biomarker or disease modules for implementation...">
+                </div>
+
+                <button type="submit" class="submit-action">Submit Assessment Report</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUCCESS INTERFACE -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-card">
+            <svg class="check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5">
+                <path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h2 style="font-family:'Outfit'; font-size:1.75rem; margin-bottom:1rem;">Report Transmitted</h2>
+            <p style="color:#64748B; margin-bottom:2.5rem; line-height:1.6;">Your clinical evaluation has been successfully archived into the HEAL diagnostic database. All observations are officially queued for logic refinement.</p>
+            <button class="submit-action" onclick="window.location.href='landing.html'" style="width:200px;">Return</button>
+        </div>
+    </div>
+
+    <script>
+        // Rating Logic
+        const ratingBoxes = document.querySelectorAll('.rating-box');
+        let currentRating = 0;
+
+        ratingBoxes.forEach(box => {
+            box.addEventListener('click', () => {
+                currentRating = box.dataset.val;
+                ratingBoxes.forEach(b => b.classList.toggle('selected', b === box));
+            });
+        });
+
+        // Focus State Logic
+        function setActive(el) {
+            document.getElementById('feedbackContainer').classList.add('focus-active');
+            document.querySelectorAll('.form-group').forEach(g => g.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // Global undim on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.form-group') && !e.target.closest('.rating-box')) {
+                document.getElementById('feedbackContainer').classList.remove('focus-active');
+                document.querySelectorAll('.form-group').forEach(g => g.classList.remove('active'));
+            }
+        });
+
+        // Form Submit
+        function handleSubmit(e) {
+            e.preventDefault();
+            document.getElementById('successOverlay').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>

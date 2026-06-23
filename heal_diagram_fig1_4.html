@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fig 1.4: HEAL Application Module Overview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    font-family: Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="630" viewBox="0 0 780 630">
+
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 9 3.5, 0 7" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- White background -->
+  <rect width="780" height="630" fill="#ffffff"/>
+
+  <!-- ══════════════ TITLE ══════════════ -->
+  <text x="390" y="36" text-anchor="middle" font-family="Arial"
+        font-size="17" font-weight="bold" fill="#1a1a2e">HEAL — Application Module Overview</text>
+  <text x="390" y="55" text-anchor="middle" font-family="Arial"
+        font-size="11" fill="#777">Fig 1.4: Modular architecture of the HEAL AI Healthcare Platform</text>
+
+  <!-- ══════════════ ROW 1: USER INPUT ══════════════ -->
+  <text x="30" y="84" font-family="Arial" font-size="10" font-weight="bold"
+        fill="#2E86C1" letter-spacing="1">USER INPUT</text>
+  <line x1="30" y1="88" x2="750" y2="88" stroke="#2E86C1" stroke-width="0.8" stroke-dasharray="4,3"/>
+
+  <!-- Symptom Intake -->
+  <rect x="80" y="96" width="255" height="68" rx="10" fill="#EBF5FB" stroke="#2E86C1" stroke-width="2"/>
+  <text x="207" y="122" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#1a3c5e">Symptom Intake</text>
+  <text x="207" y="142" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#2c5282">Chip select · NLP free-text</text>
+  <text x="207" y="157" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#2c5282">Patient profile &amp; history</text>
+
+  <!-- Lab Report Upload -->
+  <rect x="445" y="96" width="255" height="68" rx="10" fill="#EBF5FB" stroke="#2E86C1" stroke-width="2"/>
+  <text x="572" y="122" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#1a3c5e">Lab Report Upload</text>
+  <text x="572" y="142" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#2c5282">PDF / Image upload</text>
+  <text x="572" y="157" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#2c5282">OCR · Vision AI (Gemini)</text>
+
+  <!-- Arrows Row1 → Row2 -->
+  <line x1="207" y1="164" x2="207" y2="204" stroke="#666" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="572" y1="164" x2="572" y2="204" stroke="#666" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <!-- ══════════════ ROW 2: AI CORE ══════════════ -->
+  <text x="30" y="196" font-family="Arial" font-size="10" font-weight="bold"
+        fill="#7B5EA7" letter-spacing="1">AI PROCESSING CORE</text>
+  <line x1="30" y1="200" x2="750" y2="200" stroke="#7B5EA7" stroke-width="0.8" stroke-dasharray="4,3"/>
+
+  <!-- NLP Tri-Head -->
+  <rect x="80" y="210" width="255" height="74" rx="10" fill="#F5EEF8" stroke="#7B5EA7" stroke-width="2"/>
+  <text x="207" y="235" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#2c1654">NLP Tri-Head Transformer</text>
+  <text x="207" y="254" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#4a2e7a">Symptom · Severity · Duration</text>
+  <text x="207" y="270" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#4a2e7a">Shared BERT encoder</text>
+
+  <!-- Hybrid AI Scoring -->
+  <rect x="445" y="210" width="255" height="74" rx="10" fill="#F5EEF8" stroke="#7B5EA7" stroke-width="2.5"/>
+  <text x="572" y="235" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#2c1654">Hybrid AI Scoring Engine</text>
+  <text x="572" y="254" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#4a2e7a">Rule-based + ML inference</text>
+  <text x="572" y="270" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#4a2e7a">500+ disease dataset</text>
+
+  <!-- Horizontal merge line between two Row2 boxes -->
+  <line x1="335" y1="248" x2="445" y2="248" stroke="#7B5EA7" stroke-width="1.3" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+
+  <!-- Merge arrows → Row3 -->
+  <line x1="207" y1="284" x2="350" y2="330" stroke="#666" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="572" y1="284" x2="430" y2="330" stroke="#666" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <!-- ══════════════ ROW 3: LOGIC MERGE ══════════════ -->
+  <text x="30" y="322" font-family="Arial" font-size="10" font-weight="bold"
+        fill="#C0392B" letter-spacing="1">LOGIC FUSION</text>
+  <line x1="30" y1="326" x2="750" y2="326" stroke="#C0392B" stroke-width="0.8" stroke-dasharray="4,3"/>
+
+  <!-- Hybrid Logic Merge — single wide central box -->
+  <rect x="190" y="336" width="400" height="68" rx="10" fill="#FDEDEC" stroke="#E74C3C" stroke-width="2"/>
+  <text x="390" y="362" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#4a0a0a">Hybrid Logic Merge</text>
+  <text x="390" y="381" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#922b21">Pathognomonic boosters · Conflict resolution</text>
+  <text x="390" y="396" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#922b21">Lab–symptom correlation · Confidence fusion</text>
+
+  <!-- Single arrow Row3 → Row4 -->
+  <line x1="390" y1="404" x2="390" y2="444" stroke="#666" stroke-width="1.8" marker-end="url(#arr)"/>
+
+  <!-- ══════════════ ROW 4: OUTPUT — SINGLE BOX ══════════════ -->
+  <text x="30" y="436" font-family="Arial" font-size="10" font-weight="bold"
+        fill="#1E8449" letter-spacing="1">OUTPUT &amp; DASHBOARD</text>
+  <line x1="30" y1="440" x2="750" y2="440" stroke="#1E8449" stroke-width="0.8" stroke-dasharray="4,3"/>
+
+  <!-- Single combined output box -->
+  <rect x="110" y="450" width="560" height="52" rx="10" fill="#E9F7EF" stroke="#1E8449" stroke-width="2"/>
+  <text x="390" y="481" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#0d3b22">Pinpoint Dashboard  |  Clinical Reasoning  |  Hospital Finder &amp; Alerts</text>
+
+  <!-- Single arrow Row4 → Row5 -->
+  <line x1="390" y1="502" x2="390" y2="538" stroke="#666" stroke-width="1.8" marker-end="url(#arr)"/>
+
+  <!-- ══════════════ ROW 5: KNOWLEDGE BASE — SINGLE BOX ══════════════ -->
+  <text x="30" y="530" font-family="Arial" font-size="10" font-weight="bold"
+        fill="#B7950B" letter-spacing="1">KNOWLEDGE BASE</text>
+  <line x1="30" y1="534" x2="750" y2="534" stroke="#B7950B" stroke-width="0.8" stroke-dasharray="4,3"/>
+
+  <!-- Single combined knowledge box -->
+  <rect x="110" y="544" width="560" height="52" rx="10" fill="#FEF9E7" stroke="#D4AC0D" stroke-width="2"/>
+  <text x="390" y="575" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#7D6608">Disease Database  |  Clinical Rule Engine  |  Learning &amp; Feedback</text>
+
+  <!-- ══════════════ CAPTION ══════════════ -->
+  <text x="390" y="618" text-anchor="middle" font-family="Arial" font-size="10.5"
+        fill="#555" font-style="italic">
+    Fig 1.4: HEAL Application Module Overview — Five-layer modular architecture of the HEAL AI Healthcare Platform.
+  </text>
+
+</svg>
+</body>
+</html>

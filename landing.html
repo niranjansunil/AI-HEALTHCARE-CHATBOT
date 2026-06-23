@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heal — AI-Powered Medical Analysis</title>
+    <meta name="description"
+        content="Heal: Your AI-powered medical analysis tool. Get intelligent, data-driven preliminary symptom assessments instantly.">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        display: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef6ff',
+                            100: '#d9ebff',
+                            200: '#bcdcff',
+                            300: '#8ec7ff',
+                            400: '#59a7ff',
+                            500: '#3384fb',
+                            600: '#1d65f0',
+                            700: '#154fdd',
+                            800: '#1840b3',
+                            900: '#1a3a8d',
+                            950: '#142556',
+                        },
+                        surface: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            800: '#1e293b',
+                            850: '#172033',
+                            900: '#0f172a',
+                            950: '#080d1a',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'shimmer': 'shimmer 2.5s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* ===== GLOBAL ===== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #080d1a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ===== CUSTOM SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1d65f0;
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3384fb;
+        }
+
+        /* ===== HERO BACKGROUND ===== */
+        .hero-bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: url('hero-bg.png?v=2');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            will-change: opacity;
+            transition: opacity 0.05s linear;
+        }
+
+        .hero-bg-layer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,
+                    rgba(8, 13, 26, 0.20) 0%,
+                    rgba(8, 13, 26, 0.40) 50%,
+                    rgba(8, 13, 26, 0.75) 100%);
+        }
+
+        /* ===== HERO CONTENT ===== */
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            will-change: opacity, transform;
+        }
+
+        /* ===== SCROLL CUE ===== */
+        .scroll-cue {
+            position: absolute;
+            bottom: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            animation: scrollBob 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollBob {
+
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(12px);
+            }
+        }
+
+        .scroll-cue span {
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 500;
+        }
+
+        .scroll-cue svg {
+            width: 24px;
+            height: 24px;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        /* ===== GRADIENT TEXT ===== */
+        .gradient-text {
+            background: linear-gradient(135deg, #e0ecff 0%, #a3c9ff 30%, #7ab4ff 60%, #c4dfff 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s ease-in-out infinite;
+        }
+
+        /* ===== BEGIN ANALYSIS SECTION ===== */
+        .analysis-section {
+            position: relative;
+            z-index: 20;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 1.5rem;
+        }
+
+        .analysis-card {
+            width: 100%;
+            max-width: 560px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(60px);
+            transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .analysis-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .analysis-card h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.75rem;
+        }
+
+        .analysis-card p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.55);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* ===== DNA HELIX DECORATION ===== */
+        .dna-decoration {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.04;
+            pointer-events: none;
+        }
+
+        .dna-left {
+            left: 2%;
+        }
+
+        .dna-right {
+            right: 2%;
+        }
+
+        /* ===== PARTICLE FIELD ===== */
+        .particle-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ===== SYMPTOMS SECTION ===== */
+        .symptoms-section {
+            position: relative;
+            z-index: 20;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 1.5rem;
+        }
+
+        .symptoms-card {
+            width: 100%;
+            max-width: 720px;
+            background: #FFFFFF;
+            border: 1px solid #E1E8ED;
+            border-radius: 24px;
+            box-shadow:
+                0 32px 80px rgba(0, 0, 0, 0.18),
+                0 0 0 1px rgba(74, 144, 226, 0.06);
+            padding: 3rem;
+            opacity: 0;
+            transform: translateY(80px);
+            transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .symptoms-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== SYMPTOM CHIPS ===== */
+        .symptom-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.875rem 1.5rem;
+            background: #F8FAFB;
+            border: 2px solid #E1E8ED;
+            border-radius: 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            font-size: 0.975rem;
+            font-weight: 500;
+            color: #2C3E50;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .symptom-chip::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.08) 0%, rgba(74, 144, 226, 0.04) 100%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            border-radius: inherit;
+        }
+
+        .symptom-chip:hover {
+            border-color: #6BA3E8;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(74, 144, 226, 0.12);
+            background: #FFFFFF;
+        }
+
+        .symptom-chip:hover::before {
+            opacity: 1;
+        }
+
+        .symptom-chip.selected {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            border-color: #4A90E2;
+            color: #ffffff;
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.3);
+        }
+
+        .chip-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #D1DBE5;
+            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .symptom-chip.selected .chip-icon {
+            background: #3384fb;
+            border-color: #3384fb;
+        }
+
+        .chip-icon svg {
+            width: 12px;
+            height: 12px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            color: #fff;
+        }
+
+        .symptom-chip.selected .chip-icon svg {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .chip-label {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== CTA BUTTON ===== */
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #1d65f0 0%, #3384fb 50%, #59a7ff 100%);
+            background-size: 200% auto;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 8px 30px rgba(29, 101, 240, 0.35);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, #59a7ff, #1d65f0, #3384fb);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 16px 48px rgba(29, 101, 240, 0.45);
+            background-position: right center;
+        }
+
+        .cta-btn:active {
+            transform: translateY(-1px) scale(0.99);
+        }
+
+        .cta-btn svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .cta-btn:hover svg {
+            transform: translateX(4px);
+        }
+
+        /* ===== BADGE ===== */
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            background: rgba(51, 132, 251, 0.08);
+            border: 1px solid rgba(51, 132, 251, 0.2);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #8ec7ff;
+            letter-spacing: 0.04em;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-badge .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #3384fb;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* ===== STAT PILLS ===== */
+        .stat-pill {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-pill.highlighted {
+            background: rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        .stat-pill .stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stat-pill .stat-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.45);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: 0.25rem;
+        }
+
+        /* ===== SECTION DIVIDER ===== */
+        .section-divider {
+            width: 48px;
+            height: 3px;
+            background: linear-gradient(90deg, #1d65f0, #59a7ff);
+            border-radius: 999px;
+            margin: 0 auto;
+        }
+
+        /* ===== GLOW ORB ===== */
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            opacity: 0.15;
+        }
+
+        /* ===== GLASSMORPHISM SIDEBAR ===== */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 45;
+            background: rgba(0, 0, 0, 0);
+            pointer-events: none;
+            transition: background 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .sidebar-overlay.active {
+            background: rgba(0, 0, 0, 0.35);
+            pointer-events: auto;
+        }
+
+        .glass-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 68px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            overflow: hidden;
+        }
+
+        .glass-sidebar.expanded {
+            width: 300px;
+        }
+
+        /* The glass panel background */
+        .sidebar-glass {
+            position: absolute;
+            inset: 0;
+            display: flex;
+        }
+
+        .sidebar-glass-solid {
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(180deg, #0a1628 0%, #0d1f3c 50%, #091422 100%);
+        }
+
+        .sidebar-glass-blur {
+            width: 60%;
+            height: 100%;
+            background: rgba(10, 22, 45, 0.65);
+            backdrop-filter: blur(10px) saturate(1.4);
+            -webkit-backdrop-filter: blur(10px) saturate(1.4);
+            border-right: 1px solid rgba(51, 132, 251, 0.08);
+        }
+
+        /* Collapsed icon rail */
+        .sidebar-rail {
+            position: relative;
+            z-index: 2;
+            width: 68px;
+            min-width: 68px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 1.5rem;
+            gap: 0.5rem;
+        }
+
+        .rail-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1d65f0, #3384fb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(29, 101, 240, 0.35);
+            flex-shrink: 0;
+        }
+
+        .rail-logo svg {
+            width: 22px;
+            height: 22px;
+            color: #fff;
+        }
+
+        .rail-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .rail-icon:hover {
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(51, 132, 251, 0.1);
+        }
+
+        .rail-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Expanded content */
+        .sidebar-expanded-content {
+            position: relative;
+            z-index: 2;
+            flex: 1;
+            padding: 1.5rem 1.25rem 1.5rem 0;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: opacity 0.35s ease 0.1s, transform 0.35s ease 0.1s;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            min-width: 0;
+        }
+
+        .glass-sidebar.expanded .sidebar-expanded-content {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .sidebar-section-title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            padding: 0.75rem 0 0.5rem;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .sidebar-menu-item:hover {
+            background: rgba(51, 132, 251, 0.08);
+        }
+
+        /* Animated dot indicator */
+        .menu-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+        }
+
+        .menu-dot::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: rgba(51, 132, 251, 0.3);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            animation: none;
+        }
+
+        .sidebar-menu-item:hover .menu-dot {
+            background: #3384fb;
+            box-shadow: 0 0 8px rgba(51, 132, 251, 0.6);
+        }
+
+        .sidebar-menu-item:hover .menu-dot::after {
+            opacity: 1;
+            animation: dotPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.4;
+            }
+
+            50% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        .menu-label {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.55);
+            transition: color 0.3s ease;
+        }
+
+        .sidebar-menu-item:hover .menu-label {
+            color: rgba(255, 255, 255, 1);
+        }
+
+        /* Sidebar bottom section */
+        .sidebar-bottom {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Mobile hamburger toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.25rem;
+            right: 1.25rem;
+            z-index: 55;
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #0d1f3c 0%, rgba(10, 22, 45, 0.9) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 132, 251, 0.2);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #8ec7ff;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            border-color: rgba(51, 132, 251, 0.5);
+            color: #fff;
+        }
+
+        .mobile-menu-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            .symptoms-card {
+                padding: 2rem 1.5rem;
+                border-radius: 18px;
+            }
+
+            .stat-pill .stat-value {
+                font-size: 1.25rem;
+            }
+
+            /* Sidebar becomes mobile drawer */
+            .glass-sidebar {
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100% !important;
+                height: auto;
+                max-height: 0;
+                transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+                border-radius: 24px 24px 0 0;
+                overflow: hidden;
+            }
+
+            .glass-sidebar.expanded {
+                max-height: 70vh;
+                width: 100% !important;
+            }
+
+            .sidebar-rail {
+                display: none;
+            }
+
+            .sidebar-glass-solid {
+                display: none;
+            }
+
+            .sidebar-glass-blur {
+                width: 100%;
+                border-right: none;
+                border-top: 1px solid rgba(51, 132, 251, 0.15);
+            }
+
+            .sidebar-expanded-content {
+                opacity: 1;
+                transform: none;
+                pointer-events: auto;
+                padding: 1.5rem;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ========== DARKENING OVERLAY ========== -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- ========== GLASS SIDEBAR ========== -->
+    <nav class="glass-sidebar" id="glassSidebar">
+        <!-- Glass Background -->
+        <div class="sidebar-glass">
+            <div class="sidebar-glass-solid"></div>
+            <div class="sidebar-glass-blur"></div>
+        </div>
+
+        <div class="flex h-full">
+            <!-- Collapsed Icon Rail -->
+            <div class="sidebar-rail">
+                <!-- Logo -->
+                <div class="rail-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 14.5" />
+                    </svg>
+                </div>
+
+            </div>
+
+            <!-- Expanded Content Panel -->
+            <div class="sidebar-expanded-content">
+                <!-- Brand -->
+                <div style="padding-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.05);margin-bottom:0.5rem;">
+                    <h3
+                        style="font-family:'Outfit',sans-serif;font-size:1.15rem;font-weight:700;color:#fff;white-space:nowrap;">
+                        Heal</h3>
+                    <p style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-top:0.15rem;white-space:nowrap;">AI
+                        Medical Analysis Platform</p>
+                </div>
+
+                <!-- Main Navigation -->
+                <div class="sidebar-section-title">Navigation</div>
+                <a href="index.html" class="sidebar-menu-item">
+                    <span class="menu-dot"></span>
+                    <span class="menu-label">Symptom Analysis</span>
+                </a>
+
+                <!-- Resources Section -->
+                <div class="sidebar-section-title" style="margin-top:0.75rem;">Resources</div>
+                <a href="learning.html" class="sidebar-menu-item">
+                    <span class="menu-dot"></span>
+                    <span class="menu-label">Learning Corner</span>
+                </a>
+                <a href="library.html" class="sidebar-menu-item">
+                    <span class="menu-dot"></span>
+                    <span class="menu-label">Magazines & Articles</span>
+                </a>
+                <a href="support.html" class="sidebar-menu-item">
+                    <span class="menu-dot"></span>
+                    <span class="menu-label">User Feedback & Review</span>
+                </a>
+
+                <!-- Bottom -->
+                <div class="sidebar-bottom">
+                    <a href="#" class="sidebar-menu-item">
+                        <span class="menu-dot"></span>
+                        <span class="menu-label" style="font-size:0.8rem;">v2.0 — © 2026 Heal</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== MOBILE MENU TOGGLE ========== -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            id="menuIconBars">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            id="menuIconClose" style="display:none;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    </button>
+
+    <!-- ========== FIXED HERO BACKGROUND ========== -->
+    <div class="hero-bg-layer" id="heroBg"></div>
+
+    <!-- ========== PARTICLE CANVAS ========== -->
+    <canvas class="particle-canvas" id="particleCanvas"></canvas>
+
+    <!-- ========== HERO SECTION ========== -->
+    <section id="heroSection">
+        <div class="hero-content" id="heroContent">
+
+            <!-- Glow Orbs -->
+            <div class="glow-orb" style="width:400px;height:400px;background:#1d65f0;top:10%;left:-5%;"></div>
+            <div class="glow-orb" style="width:300px;height:300px;background:#59a7ff;bottom:15%;right:-8%;"></div>
+
+            <!-- Badge -->
+            <div class="hero-badge mb-6">
+                <span class="dot"></span>
+                <span>AI-Powered Diagnostics</span>
+            </div>
+
+            <!-- Title -->
+            <h1
+                class="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.08] tracking-tight max-w-4xl mb-6">
+                Welcome to<br>
+                <span class="gradient-text">Heal.</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="text-base sm:text-lg md:text-xl text-slate-300 max-w-xl mb-10 leading-relaxed font-light">
+                Your <span class="text-slate-100 font-medium">AI-Powered</span> Medical Analysis Tool.<br
+                    class="hidden sm:inline">
+                Intelligent, accurate & instantly available.
+            </p>
+
+            <!-- Stats Row -->
+            <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-12">
+                <div class="stat-pill highlighted">
+                    <span class="stat-value">92%</span>
+                    <span class="stat-label">Accuracy</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-value">&lt;3s</span>
+                    <span class="stat-label">Analysis</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-value">200+</span>
+                    <span class="stat-label">Conditions</span>
+                </div>
+            </div>
+
+
+
+            <!-- Scroll cue -->
+            <div class="scroll-cue">
+                <span>Scroll</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== THE MISSION & CTA SECTION ========== -->
+    <section class="max-w-5xl mx-auto px-6 py-24 text-center relative z-10" id="missionSection"
+        style="margin-top: 4rem;">
+
+        <!-- Mission Statement -->
+        <div class="mb-20 p-12 border-t border-sky-500/20 rounded-t-[40px]" id="missionText"
+            style="box-shadow: 0 -20px 40px -20px rgba(56, 189, 248, 0.2);">
+
+            <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#38bdf8] mb-8 tracking-tight">
+                What is HEAL?
+            </h2>
+
+            <p class="text-xl sm:text-2xl text-slate-200 leading-relaxed font-light mb-10 max-w-4xl mx-auto">
+                <span class="text-white font-semibold">Heal</span> is an intelligent diagnostic framework designed to
+                bridge the gap between patient-reported symptoms and clinical laboratory data. By correlating physical
+                signs with hematological markers, the system provides high-precision health assessments. Through a
+                transparent logic engine, it transforms complex medical reports into clear, actionable insights,
+                empowering users with early health awareness and informed clinical guidance.
+            </p>
+        </div>
+
+        <div class="section-divider mb-20 opacity-10"></div>
+
+        <!-- Analysis Card -->
+        <div class="analysis-card mx-auto" id="analysisCard">
+            <h2 class="text-white">Ready to Get Started?</h2>
+            <p>Describe your symptoms and our AI engine will provide an intelligent, data-driven preliminary analysis.
+            </p>
+            <a href="index.html" class="cta-btn" id="beginAnalysisBtn">
+                Begin Analysis
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+            </a>
+            <p class="text-xs text-slate-600 text-center mt-6 leading-relaxed">
+                ⚕️ This tool provides preliminary analysis only. Always consult a licensed healthcare professional.
+            </p>
+        </div>
+    </section>
+
+    <!-- ========== JAVASCRIPT ========== -->===== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // ===== ELEMENTS =====
+            const heroBg = document.getElementById('heroBg');
+            const heroContent = document.getElementById('heroContent');
+            const missionText = document.getElementById('missionText');
+            const analysisCard = document.getElementById('analysisCard');
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // ===== SCROLL-DRIVEN HERO FADE =====
+            let ticking = false;
+
+            function onScroll() {
+                if (!ticking) {
+                    requestAnimationFrame(updateOnScroll);
+                    ticking = true;
+                }
+            }
+
+            function updateOnScroll() {
+                const scrollY = window.scrollY;
+                const vh = window.innerHeight;
+
+                // Hero fade range: 0 → 1 viewport height
+                const fadeProgress = Math.min(scrollY / (vh * 0.75), 1);
+
+                // Background opacity: 1 → 0
+                heroBg.style.opacity = 1 - fadeProgress;
+
+                // Hero content: fade out + slight upward parallax
+                heroContent.style.opacity = 1 - fadeProgress * 1.3;
+                heroContent.style.transform = `translateY(${-scrollY * 0.25}px)`;
+
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+
+            // ===== INTERSECTION OBSERVER — SLIDE-IN ANIMATIONS =====
+            const observerOptions = {
+                threshold: 0.15,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Initial states for animation
+            [missionText, analysisCard].forEach(el => {
+                if (el) {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(60px)';
+                    el.style.transition = 'opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1)';
+                    observer.observe(el);
+                }
+            });
+
+            // ===== PARTICLE SYSTEM =====
+            let particles = [];
+            const PARTICLE_COUNT = 60;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight * 2;
+            }
+
+            function createParticles() {
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        radius: Math.random() * 1.5 + 0.5,
+                        speedX: (Math.random() - 0.5) * 0.3,
+                        speedY: (Math.random() - 0.5) * 0.3,
+                        opacity: Math.random() * 0.3 + 0.05,
+                    });
+                }
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(p => {
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+
+                    // Wrap around edges
+                    if (p.x < 0) p.x = canvas.width;
+                    if (p.x > canvas.width) p.x = 0;
+                    if (p.y < 0) p.y = canvas.height;
+                    if (p.y > canvas.height) p.y = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(51, 132, 251, ${p.opacity})`;
+                    ctx.fill();
+                });
+
+                // Draw connections
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 120) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(51, 132, 251, ${0.06 * (1 - dist / 120)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                requestAnimationFrame(animateParticles);
+            }
+
+            resizeCanvas();
+            createParticles();
+            animateParticles();
+
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                createParticles();
+            });
+
+            // ===== INITIAL SCROLL POSITION =====
+            updateOnScroll();
+
+            // ===== GLASS SIDEBAR =====
+            const sidebar = document.getElementById('glassSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mobileToggle = document.getElementById('mobileMenuToggle');
+            const menuIconBars = document.getElementById('menuIconBars');
+            const menuIconClose = document.getElementById('menuIconClose');
+            const isMobile = () => window.innerWidth <= 640;
+
+            // Desktop: hover to expand
+            sidebar.addEventListener('mouseenter', () => {
+                if (!isMobile()) {
+                    sidebar.classList.add('expanded');
+                    overlay.classList.add('active');
+                }
+            });
+            sidebar.addEventListener('mouseleave', () => {
+                if (!isMobile()) {
+                    sidebar.classList.remove('expanded');
+                    overlay.classList.remove('active');
+                }
+            });
+
+            // Mobile: toggle on button click
+            mobileToggle.addEventListener('click', () => {
+                const isOpen = sidebar.classList.toggle('expanded');
+                overlay.classList.toggle('active', isOpen);
+                menuIconBars.style.display = isOpen ? 'none' : 'block';
+                menuIconClose.style.display = isOpen ? 'block' : 'none';
+            });
+
+            // Close on overlay click
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('expanded');
+                overlay.classList.remove('active');
+                if (isMobile()) {
+                    menuIconBars.style.display = 'block';
+                    menuIconClose.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
