@@ -1,0 +1,585 @@
+/* ===========================================
+   PREMIUM THEME — Light Form + Dark Accents
+   Overrides styles.css & results-styles.css
+   =========================================== */
+
+/* ===== ANIMATED BACKGROUND ===== */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(29, 101, 240, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(99, 102, 241, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(51, 132, 251, 0.04) 0%, transparent 50%);
+    animation: bgShift 12s ease-in-out infinite alternate;
+}
+
+@keyframes bgShift {
+    0% { opacity: 1; }
+    100% { opacity: 0.6; transform: scale(1.05); }
+}
+
+/* ===== BODY — Slightly lighter dark ===== */
+body {
+    background: linear-gradient(135deg, #1a1f2e 0%, #1e2436 100%) !important;
+}
+
+/* ===== CONTAINER ENTRANCE ===== */
+.container {
+    animation: containerReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes containerReveal {
+    from { opacity: 0; transform: translateY(30px) scale(0.98); filter: blur(4px); }
+    to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+    padding: 2.5rem 0;
+    position: relative;
+}
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 48px;
+    height: 3px;
+    background: linear-gradient(90deg, #2563eb, #60a5fa);
+    border-radius: 999px;
+}
+
+.hero-title {
+    color: #fff !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+}
+
+.highlight {
+    background: linear-gradient(135deg, #bfdbfe 0%, #60a5fa 40%, #3b82f6 70%, #93c5fd 100%) !important;
+    background-size: 200% auto !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    animation: shimmerHL 4s ease-in-out infinite;
+}
+@keyframes shimmerHL {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.hero-subtitle {
+    color: rgba(200, 210, 225, 0.9) !important;
+}
+
+/* ===========================================
+   INTAKE FORM — WHITE / LIGHT (original style)
+   Keep the form bright and readable
+   =========================================== */
+.intake-form {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(74, 144, 226, 0.12) !important;
+    border-radius: 24px !important;
+    box-shadow:
+        0 32px 80px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(74, 144, 226, 0.04) !important;
+    position: relative;
+    overflow: visible;
+}
+.intake-form::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+    animation: orbFloat 8s ease-in-out infinite alternate;
+}
+@keyframes orbFloat {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-30px, 20px); }
+}
+
+/* Form Labels — dark text on white bg */
+.form-label {
+    color: #2C3E50 !important;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+/* Removed dimming effect as per user request */
+.form-section {
+    transition: opacity 0.3s ease !important;
+}
+
+/* ===== SEARCH INPUT — Light, blends with white form ===== */
+.custom-dropdown {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    position: relative;
+    z-index: 100;
+}
+.dropdown-search-input {
+    background: #FFFFFF !important;
+    border: 2px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+    color: #1e293b !important;
+    transition: none !important;
+    font-weight: 500 !important;
+}
+.dropdown-search-input:focus {
+    background: #FFFFFF !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1), 0 4px 12px rgba(56, 189, 248, 0.06) !important;
+}
+.dropdown-search-input::placeholder {
+    color: #94a3b8 !important;
+}
+.search-icon {
+    color: #64748b !important;
+}
+
+/* ===== DROPDOWN MENU — SOLID WHITE, SNAP OPEN ===== */
+.dropdown-menu {
+    background: #FFFFFF !important;
+    border: 2px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    z-index: 200 !important;
+    max-height: 380px !important;
+    overflow-y: auto !important;
+    display: none;
+    transition: none !important;
+}
+.dropdown-menu.active {
+    display: block !important;
+    background: #FFFFFF !important;
+}
+/* Dropdown scrollbar */
+.dropdown-menu::-webkit-scrollbar { width: 5px; }
+.dropdown-menu::-webkit-scrollbar-track { background: #F8FAFC; border-radius: 10px; }
+.dropdown-menu::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+
+.category-title {
+    color: #0ea5e9 !important;
+    font-size: 0.68rem !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    padding: 0.75rem 1rem 0.4rem !important;
+}
+.dropdown-category:not(:last-child) {
+    border-bottom: 1px solid #F1F5F9 !important;
+}
+.symptom-option {
+    color: #334155 !important;
+    background-color: #FFFFFF !important;
+    opacity: 1 !important;
+    border-radius: 8px !important;
+    margin: 2px 6px !important;
+    padding: 0.65rem 0.75rem !important;
+    transition: all 0.2s ease !important;
+    position: relative;
+    z-index: 5;
+}
+.symptom-option:hover {
+    background: #F0F9FF !important;
+    color: #0c4a6e !important;
+}
+/* Accent bar on hover */
+.symptom-option:hover::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background: #38bdf8;
+    border-radius: 999px;
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.35);
+}
+.symptom-option.selected {
+    background: #E0F2FE !important;
+    color: #0369a1 !important;
+    font-weight: 600;
+}
+.symptom-option.selected::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 60%;
+    background: #0ea5e9;
+    border-radius: 999px;
+}
+.symptom-option .check-icon {
+    color: #CBD5E1 !important;
+}
+.symptom-option.selected .check-icon {
+    color: #0ea5e9 !important;
+}
+.symptom-option.selected .check-icon circle {
+    fill: #0ea5e9 !important;
+    stroke: #0ea5e9 !important;
+}
+.symptom-option.selected .check-icon path {
+    stroke: #FFFFFF !important;
+}
+
+/* Chips — soft blue on white */
+.chip {
+    background: #E0F2FE !important;
+    color: #0369a1 !important;
+    border: 1px solid #BAE6FD !important;
+    border-radius: 999px !important;
+}
+.chip-remove {
+    background: #0ea5e9 !important;
+    color: #fff !important;
+}
+.chip-remove:hover {
+    background: #0284c7 !important;
+}
+
+/* Duration Buttons — light */
+.duration-btn {
+    background: #F8FAFB !important;
+    border: 2px solid #E1E8ED !important;
+    color: #2C3E50 !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+}
+.duration-btn:hover {
+    border-color: #6BA3E8 !important;
+    background: #E8F4FD !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.12) !important;
+}
+.duration-btn.active {
+    background: linear-gradient(135deg, #4A90E2, #357ABD) !important;
+    border-color: #4A90E2 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 20px rgba(74, 144, 226, 0.3) !important;
+}
+
+/* Severity Slider */
+.severity-value {
+    color: #4A90E2 !important;
+}
+.severity-slider::-webkit-slider-thumb {
+    background: #FFFFFF !important;
+    border: 3px solid #4A90E2 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+.severity-slider::-moz-range-thumb {
+    background: #FFFFFF !important;
+    border: 3px solid #4A90E2 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+.slider-label {
+    color: #7F8C8D !important;
+}
+
+/* Text Area — light */
+.text-area {
+    background: #F8FAFB !important;
+    border: 2px solid #E1E8ED !important;
+    border-radius: 12px !important;
+    color: #2C3E50 !important;
+}
+.text-area:focus {
+    background: #fff !important;
+    border-color: #4A90E2 !important;
+    box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1) !important;
+}
+.text-area::placeholder {
+    color: #95A5A6 !important;
+}
+
+/* Submit Button — Premium Blue Gradient */
+.submit-btn {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%) !important;
+    background-size: 200% auto;
+    border-radius: 16px !important;
+    padding: 1.1rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em;
+    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.3) !important;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    position: relative;
+    overflow: hidden;
+}
+.submit-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.12) 50%, transparent 70%);
+    transform: rotate(45deg);
+    transition: all 0.6s ease;
+    opacity: 0;
+}
+.submit-btn:hover::after {
+    opacity: 1;
+    transform: rotate(45deg) translate(30%, 30%);
+}
+.submit-btn:hover {
+    transform: translateY(-3px) scale(1.01) !important;
+    box-shadow: 0 16px 48px rgba(37, 99, 235, 0.4) !important;
+    background-position: right center;
+}
+
+/* Footer */
+.caution-message {
+    background: rgba(243, 156, 18, 0.06) !important;
+    border: 1px solid rgba(243, 156, 18, 0.2) !important;
+    border-radius: 14px !important;
+    backdrop-filter: blur(12px);
+}
+
+/* Hospital Finder — keep white to match form */
+.hospital-finder {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(74, 144, 226, 0.12) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Staggered entrance for form sections */
+.form-section {
+    animation: sectionFadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.form-section:nth-child(1) { animation-delay: 0.1s; }
+.form-section:nth-child(2) { animation-delay: 0.2s; }
+.form-section:nth-child(3) { animation-delay: 0.3s; }
+.form-section:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes sectionFadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Dropdown Scrollbar */
+.dropdown-menu::-webkit-scrollbar { width: 5px; }
+.dropdown-menu::-webkit-scrollbar-track { background: transparent; }
+.dropdown-menu::-webkit-scrollbar-thumb { background: rgba(74, 144, 226, 0.3); border-radius: 999px; }
+.dropdown-menu::-webkit-scrollbar-thumb:hover { background: rgba(74, 144, 226, 0.5); }
+
+/* ===========================================
+   RESULTS PAGE — PREMIUM DARK GLASS
+   Results page stays dark & premium
+   =========================================== */
+
+/* Results Header */
+.results-header {
+    position: relative;
+}
+.results-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 48px;
+    height: 3px;
+    background: linear-gradient(90deg, #2563eb, #60a5fa);
+    border-radius: 999px;
+}
+
+.results-title {
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff 0%, #bfdbfe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Back Button — Glass */
+.back-btn {
+    background: rgba(15, 23, 42, 0.5) !important;
+    border: 1px solid rgba(59, 130, 246, 0.2) !important;
+    color: #93c5fd !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease !important;
+}
+.back-btn:hover {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+    color: #fff !important;
+}
+
+/* Results Cards — Glass on dark bg */
+.results-card {
+    background: linear-gradient(165deg, rgba(20, 30, 55, 0.85) 0%, rgba(12, 18, 35, 0.9) 100%) !important;
+    border: 1px solid rgba(51, 132, 251, 0.1) !important;
+    border-radius: 24px !important;
+    backdrop-filter: blur(40px) saturate(1.4);
+    -webkit-backdrop-filter: blur(40px) saturate(1.4);
+    box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+    animation: cardSlideIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes cardSlideIn {
+    from { opacity: 0; transform: translateY(24px); filter: blur(2px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.results-card:nth-child(2) { animation-delay: 0.1s; }
+.results-card:nth-child(3) { animation-delay: 0.2s; }
+.results-card:nth-child(4) { animation-delay: 0.3s; }
+.results-card:nth-child(5) { animation-delay: 0.4s; }
+
+.card-title {
+    color: #fff !important;
+    border-bottom: 1px solid rgba(51, 132, 251, 0.1) !important;
+}
+.card-title svg {
+    color: #60a5fa !important;
+}
+
+/* Input Summary */
+.input-summary {
+    background: linear-gradient(165deg, rgba(20, 30, 55, 0.9) 0%, rgba(12, 18, 35, 0.95) 100%) !important;
+}
+
+/* Symptom Chips in Results */
+.results-card .symptom-chip {
+    background: rgba(59, 130, 246, 0.1) !important;
+    border: 1.5px solid rgba(59, 130, 246, 0.25) !important;
+    color: #93c5fd !important;
+    border-radius: 12px !important;
+}
+
+/* Metadata */
+.metadata-label {
+    color: #64748b !important;
+}
+.metadata-value {
+    color: #e2e8f0 !important;
+}
+
+/* Disease Cards */
+.disease-card {
+    background: rgba(15, 23, 42, 0.4) !important;
+    border: 1px solid rgba(51, 132, 251, 0.08) !important;
+    border-radius: 20px !important;
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+.disease-card:hover {
+    border-color: rgba(59, 130, 246, 0.25) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
+    transform: translateY(-4px) !important;
+}
+.disease-card.top-match {
+    border: 1.5px solid rgba(59, 130, 246, 0.3) !important;
+    background: linear-gradient(165deg, rgba(59, 130, 246, 0.06) 0%, rgba(15, 23, 42, 0.5) 100%) !important;
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.08) !important;
+}
+
+.disease-rank {
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+}
+
+.disease-name { color: #fff !important; }
+.disease-category { color: #64748b !important; }
+.disease-description { color: #94a3b8 !important; }
+
+/* Matched Symptoms */
+.matched-symptom {
+    background: rgba(34, 197, 94, 0.08) !important;
+    border-left: 3px solid rgba(34, 197, 94, 0.5) !important;
+    border-radius: 8px !important;
+    color: #cbd5e1 !important;
+}
+
+/* Unmatched */
+.unmatched-symptom {
+    background: rgba(100, 116, 139, 0.1) !important;
+    color: #64748b !important;
+    border-radius: 8px !important;
+}
+
+/* Recommendations */
+.recommendations-list li {
+    background: rgba(59, 130, 246, 0.05) !important;
+    border-left: 3px solid rgba(59, 130, 246, 0.4) !important;
+    border-radius: 8px !important;
+    color: #cbd5e1 !important;
+}
+
+/* Combinations */
+.combination-card {
+    background: rgba(15, 23, 42, 0.35) !important;
+    border: 1px solid rgba(51, 132, 251, 0.08) !important;
+    border-radius: 16px !important;
+}
+.combination-header h4 { color: #e2e8f0 !important; }
+.combination-description { color: #94a3b8 !important; }
+.combo-disease {
+    background: rgba(15, 23, 42, 0.4) !important;
+    border-radius: 10px !important;
+}
+.combo-disease-name { color: #cbd5e1 !important; }
+.co-occurrence-details {
+    background: rgba(15, 23, 42, 0.4) !important;
+    border-radius: 10px !important;
+}
+.co-occurrence-details span { color: #94a3b8 !important; }
+.co-occurrence-details strong { color: #e2e8f0 !important; }
+
+/* All Possibilities */
+.possibility-card {
+    background: rgba(15, 23, 42, 0.35) !important;
+    border: 1px solid rgba(51, 132, 251, 0.08) !important;
+    border-radius: 16px !important;
+    transition: all 0.3s ease !important;
+}
+.possibility-card:hover {
+    border-color: rgba(59, 130, 246, 0.2) !important;
+    background: rgba(15, 23, 42, 0.5) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+}
+.possibility-name { color: #e2e8f0 !important; }
+.possibility-category { color: #64748b !important; }
+
+/* General Recommendations */
+.recommendation-item {
+    border-radius: 16px !important;
+}
+.recommendation-item.priority-high {
+    background: rgba(239, 68, 68, 0.06) !important;
+    border-color: rgba(239, 68, 68, 0.4) !important;
+}
+.recommendation-item.priority-medium {
+    background: rgba(245, 158, 11, 0.06) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+}
+.recommendation-item.priority-general {
+    background: rgba(59, 130, 246, 0.06) !important;
+    border-color: rgba(59, 130, 246, 0.4) !important;
+}
+.recommendation-text { color: #cbd5e1 !important; }
+
+/* Red Flag Alerts */
+.red-flag-alert {
+    border-radius: 20px !important;
+    box-shadow: 0 12px 40px rgba(239, 68, 68, 0.3) !important;
+}

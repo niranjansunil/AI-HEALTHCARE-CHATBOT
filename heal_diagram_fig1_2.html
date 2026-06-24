@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fig 1.2: NLP Tri-Head Transformer Architecture</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+    font-family: Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="660" viewBox="0 0 900 660">
+
+  <!-- Background -->
+  <rect width="900" height="660" fill="#ffffff"/>
+
+  <!-- ===== TITLE ===== -->
+  <text x="450" y="36" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#1a1a2e">NLP Tri-Head Transformer Architecture</text>
+  <text x="450" y="58" text-anchor="middle" font-family="Arial" font-size="12" fill="#555555">Parallel extraction of Symptom · Severity · Duration from free-text patient narrative</text>
+
+  <!-- ===== ARROWHEAD MARKERS ===== -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#444"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2E86C1"/>
+    </marker>
+  </defs>
+
+  <!-- ===== LEFT: Patient Narrative Box ===== -->
+  <!-- Expanded box for detailed narrative -->
+  <rect x="18" y="155" width="168" height="185" rx="10" ry="10" fill="#EBF5FB" stroke="#2E86C1" stroke-width="2"/>
+
+  <!-- Label badge -->
+  <rect x="38" y="155" width="120" height="22" rx="5" ry="5" fill="#2E86C1"/>
+  <text x="98" y="171" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#ffffff">Patient Narrative</text>
+
+  <!-- Divider -->
+  <line x1="28" y1="183" x2="176" y2="183" stroke="#2E86C1" stroke-width="0.8" stroke-dasharray="4,3"/>
+
+  <!-- Detailed narrative lines -->
+  <text x="102" y="200" text-anchor="middle" font-family="Arial" font-size="10" fill="#1a3c5e" font-style="italic">"I have been experiencing</text>
+  <text x="102" y="215" text-anchor="middle" font-family="Arial" font-size="10" fill="#1a3c5e" font-style="italic">a severe, dry cough for</text>
+  <text x="102" y="230" text-anchor="middle" font-family="Arial" font-size="10" fill="#1a3c5e" font-style="italic">the past 3 days. It gets</text>
+  <text x="102" y="245" text-anchor="middle" font-family="Arial" font-size="10" fill="#1a3c5e" font-style="italic">worse at night. I also</text>
+  <text x="102" y="260" text-anchor="middle" font-family="Arial" font-size="10" fill="#1a3c5e" font-style="italic">have a high fever (~102°F),</text>
+  <text x="102" y="275" text-anchor="middle" font-family="Arial" font-size="10" fill="#1a3c5e" font-style="italic">chest tightness, mild</text>
+  <text x="102" y="290" text-anchor="middle" font-family="Arial" font-size="10" fill="#1a3c5e" font-style="italic">breathlessness, and feel</text>
+  <text x="102" y="305" text-anchor="middle" font-family="Arial" font-size="10" fill="#1a3c5e" font-style="italic">very fatigued."</text>
+
+  <!-- NLP tags below narrative -->
+  <line x1="28" y1="316" x2="176" y2="316" stroke="#2E86C1" stroke-width="0.6" stroke-dasharray="3,2"/>
+  <text x="38" y="330" font-family="Arial" font-size="9" fill="#2E86C1" font-weight="bold">NLP Input: Free-Text</text>
+
+  <!-- Vertical spine line from Patient Narrative -->
+  <!-- Fan-out lines to 3 heads -->
+  <!-- Line from right of Patient Narrative to branch point -->
+  <line x1="186" y1="245" x2="230" y2="245" stroke="#555" stroke-width="1.8"/>
+
+  <!-- Branch point vertical spine -->
+  <line x1="230" y1="155" x2="230" y2="335" stroke="#555" stroke-width="1.8"/>
+
+  <!-- Horizontal lines to each head -->
+  <!-- Top: Entity Head -->
+  <line x1="230" y1="155" x2="290" y2="155" stroke="#555" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <!-- Middle: Regression Head -->
+  <line x1="230" y1="245" x2="290" y2="245" stroke="#555" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <!-- Bottom: Temporal Head -->
+  <line x1="230" y1="335" x2="290" y2="335" stroke="#555" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- ===== HEAD 1: Entity Head (NER) — Top ===== -->
+  <rect x="290" y="120" width="185" height="70" rx="10" ry="10" fill="#D6EAF8" stroke="#2E86C1" stroke-width="2"/>
+  <text x="383" y="148" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#1a3c5e">Entity Head (NER)</text>
+  <text x="383" y="167" text-anchor="middle" font-family="Arial" font-size="11" fill="#2c5282">Symptom extraction</text>
+
+  <!-- Arrow Head1 → Output1 -->
+  <line x1="475" y1="155" x2="535" y2="155" stroke="#2E86C1" stroke-width="1.8" marker-end="url(#arrow-blue)"/>
+
+  <!-- Output 1: COUGH -->
+  <rect x="535" y="128" width="130" height="54" rx="8" ry="8" fill="#AED6F1" stroke="#2E86C1" stroke-width="1.8"/>
+  <text x="600" y="152" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#1a3c5e">COUGH</text>
+  <text x="600" y="171" text-anchor="middle" font-family="Arial" font-size="10" fill="#1a3c5e">Symptom Token</text>
+
+  <!-- ===== HEAD 2: Regression Head — Middle ===== -->
+  <rect x="290" y="210" width="185" height="70" rx="10" ry="10" fill="#FDEDEC" stroke="#E74C3C" stroke-width="2"/>
+  <text x="383" y="238" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#4a0a0a">Regression Head</text>
+  <text x="383" y="257" text-anchor="middle" font-family="Arial" font-size="11" fill="#922b21">Severity calibration</text>
+
+  <!-- Arrow Head2 → Output2 -->
+  <line x1="475" y1="245" x2="535" y2="245" stroke="#E74C3C" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- Output 2: Severity -->
+  <rect x="535" y="218" width="130" height="54" rx="8" ry="8" fill="#FADBD8" stroke="#E74C3C" stroke-width="1.8"/>
+  <text x="600" y="242" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#4a0a0a">Severity: 9/10</text>
+  <text x="600" y="261" text-anchor="middle" font-family="Arial" font-size="10" fill="#4a0a0a">Intensity Score</text>
+
+  <!-- ===== HEAD 3: Temporal Head — Bottom ===== -->
+  <rect x="290" y="300" width="185" height="70" rx="10" ry="10" fill="#E9F7EF" stroke="#1E8449" stroke-width="2"/>
+  <text x="383" y="328" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#0d3b22">Temporal Head</text>
+  <text x="383" y="347" text-anchor="middle" font-family="Arial" font-size="11" fill="#1E8449">Duration extraction</text>
+
+  <!-- Arrow Head3 → Output3 -->
+  <line x1="475" y1="335" x2="535" y2="335" stroke="#1E8449" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- Output 3: Duration -->
+  <rect x="535" y="308" width="130" height="54" rx="8" ry="8" fill="#A9DFBF" stroke="#1E8449" stroke-width="1.8"/>
+  <text x="600" y="332" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#0d3b22">Duration: 3 Days</text>
+  <text x="600" y="351" text-anchor="middle" font-family="Arial" font-size="10" fill="#0d3b22">Temporal Token</text>
+
+  <!-- ===== MERGE LINES → Disease Eval Engine ===== -->
+  <!-- Vertical spine on right -->
+  <line x1="665" y1="155" x2="710" y2="155" stroke="#555" stroke-width="1.8"/>
+  <line x1="665" y1="245" x2="710" y2="245" stroke="#555" stroke-width="1.8"/>
+  <line x1="665" y1="335" x2="710" y2="335" stroke="#555" stroke-width="1.8"/>
+  <line x1="710" y1="155" x2="710" y2="335" stroke="#555" stroke-width="1.8"/>
+  <line x1="710" y1="245" x2="740" y2="245" stroke="#555" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- ===== RIGHT: Disease Eval Engine ===== -->
+  <rect x="740" y="175" width="135" height="140" rx="12" ry="12" fill="#F9F3FF" stroke="#7B5EA7" stroke-width="2.5"/>
+  <text x="808" y="204" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#2c1654">Disease Eval</text>
+  <text x="808" y="222" text-anchor="middle" font-family="Arial" font-size="13" font-weight="bold" fill="#2c1654">Engine</text>
+  <line x1="758" y1="232" x2="858" y2="232" stroke="#7B5EA7" stroke-width="0.8" stroke-dasharray="4,3"/>
+  <text x="808" y="252" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#4a2e7a">Weighted logic</text>
+  <text x="808" y="268" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#4a2e7a">+ Correlation</text>
+  <text x="808" y="284" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#4a2e7a">→ Ranked Diagnoses</text>
+  <text x="808" y="300" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#4a2e7a">+ Confidence Scores</text>
+
+  <!-- ===== SHARED ENCODER (Transformer Base) label ===== -->
+  <!-- Bracket under the 3 heads -->
+  <rect x="290" y="410" width="185" height="38" rx="8" ry="8" fill="#FEF9E7" stroke="#D4AC0D" stroke-width="1.8" stroke-dasharray="6,3"/>
+  <text x="383" y="428" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#7D6608">Shared BERT Encoder</text>
+  <text x="383" y="443" text-anchor="middle" font-family="Arial" font-size="10" fill="#7D6608">Common contextual embedding layer</text>
+  <!-- Bracket lines -->
+  <line x1="383" y1="370" x2="383" y2="410" stroke="#D4AC0D" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="290" y1="370" x2="475" y2="370" stroke="#D4AC0D" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="290" y1="370" x2="290" y2="410" stroke="#D4AC0D" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="475" y1="370" x2="475" y2="410" stroke="#D4AC0D" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <!-- ===== LEGEND ===== -->
+  <rect x="30" y="540" width="840" height="46" rx="8" fill="#f5f5f5" stroke="#cccccc" stroke-width="1"/>
+  <rect x="55" y="556" width="14" height="14" rx="3" fill="#D6EAF8" stroke="#2E86C1" stroke-width="1.5"/>
+  <text x="75" y="567" font-family="Arial" font-size="11" fill="#333">Entity Head (Symptom)</text>
+  <rect x="235" y="556" width="14" height="14" rx="3" fill="#FDEDEC" stroke="#E74C3C" stroke-width="1.5"/>
+  <text x="255" y="567" font-family="Arial" font-size="11" fill="#333">Regression Head (Severity)</text>
+  <rect x="450" y="556" width="14" height="14" rx="3" fill="#E9F7EF" stroke="#1E8449" stroke-width="1.5"/>
+  <text x="470" y="567" font-family="Arial" font-size="11" fill="#333">Temporal Head (Duration)</text>
+  <rect x="655" y="556" width="14" height="14" rx="3" fill="#F9F3FF" stroke="#7B5EA7" stroke-width="1.5"/>
+  <text x="675" y="567" font-family="Arial" font-size="11" fill="#333">Eval Engine</text>
+
+  <!-- ===== FIGURE CAPTION ===== -->
+  <text x="30" y="620" font-family="Arial" font-size="11" fill="#555555" font-style="italic">Fig 1.2: NLP Tri-Head Transformer Architecture — Parallel extraction of Symptom, Severity, and Duration</text>
+
+</svg>
+</body>
+</html>

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Healthcare Chatbot - Symptom Analysis</title>
+    <meta name="description"
+        content="Your intelligent assistant for preliminary symptom analysis. Quick, secure, and data-driven healthcare diagnostics.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="premium-theme.css">
+    <style>
+        .top-nav-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 1.5rem 0 0.5rem;
+            animation: fadeInDown 0.6s ease-out;
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .logo-back-link {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .logo-back-link:hover {
+            transform: translateX(-4px);
+        }
+        .logo-icon-box {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+            color: #fff;
+        }
+        .logo-icon-box svg {
+            width: 20px;
+            height: 20px;
+        }
+        .logo-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        /* Mutual Exclusivity Styles */
+        .exclusive-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2.5rem 0;
+            position: relative;
+        }
+        .exclusive-divider::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: rgba(200, 210, 225, 0.3); /* Arctic Slate texture border */
+        }
+        .exclusive-divider span {
+            position: relative;
+            background: #FFFFFF;
+            padding: 0 1.25rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #38bdf8; /* Icy Blue / Sky Blue */
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+        }
+
+        .clear-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 1.5rem;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .clear-btn:hover {
+            background: #38bdf8;
+            color: #0F172A;
+        }
+
+        .form-section {
+            border: 1px solid rgba(200, 210, 225, 0.2); /* Arctic Slate */
+        }
+
+        /* Texture handling */
+        .intake-form {
+            position: relative;
+        }
+        .intake-form::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.02;
+            pointer-events: none;
+            background-image: url("https://www.transparenttextures.com/patterns/pinstriped-suit.png"); /* Subtle grain/texture */
+            z-index: 1;
+        }
+
+        /* Ensure symptoms dropdown stacks above sibling form sections.
+           Each .form-section has 'animation' (premium-theme.css) which creates
+           separate stacking contexts — later DOM siblings paint on top without this. */
+        #symptoms-section {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Lock Animation */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-4px) rotate(-5deg); }
+            50% { transform: translateX(4px) rotate(5deg); }
+            75% { transform: translateX(-4px) rotate(-5deg); }
+            100% { transform: translateX(0); }
+        }
+        .lock-icon {
+            display: none;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+            opacity: 0.8;
+            vertical-align: middle;
+        }
+        .lock-icon.visible {
+            display: inline-block;
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Top Bar with Back Button -->
+        <div class="top-nav-bar">
+            <a href="landing.html" class="logo-back-link">
+                <div class="logo-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                    </svg>
+                </div>
+                <span class="logo-name">Heal</span>
+            </a>
+        </div>
+
+        <!-- Hero Section -->
+        <header class="hero">
+            <h1 class="hero-title">Welcome to AI-Powered <span class="highlight">Healthcare Chatbot</span></h1>
+            <p class="hero-subtitle">Your intelligent assistant for preliminary symptom analysis. Quick, secure, and
+                data-driven.</p>
+        </header>
+
+        <!-- Mutual Exclusivity Disclaimer -->
+        <div class="disclaimer-box" style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(56, 189, 248, 0.08); border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2); font-size: 0.9rem; color: #cbd5e1; text-align: center; backdrop-filter: blur(8px);">
+            <strong style="color: #38bdf8;">Note:</strong> Please use either the <strong>Symptom description (text)</strong> OR the <strong>Search Symptoms (dropdown)</strong>. Selecting one will temporarily lock the other to prevent conflicting inputs.
+        </div>
+
+        <!-- Core Intake Form -->
+        <main class="intake-form" style="position: relative;">
+            <button class="clear-btn" id="reset-paths">Clear Inputs</button>
+
+            <!-- PRIMARY: NLP DESCRIPTION -->
+            <section class="form-section" id="nlp-path">
+                <label for="additional-info" class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Symptom description <span class="lock-icon" id="nlp-lock">🔒</span></span>
+                    <span style="font-size: 0.65rem; color: #38bdf8; font-weight: 700; opacity: 0.8;">[ NLP ACTIVE PATH ]</span>
+                </label>
+                <textarea id="additional-info" class="text-area" rows="6"
+                    placeholder="Describe your symptoms naturally (e.g., 'Since yesterday I've had a agonizing headache and slight fever after exercise')..."></textarea>
+            </section>
+
+            <!-- MUTUAL EXCLUSIVITY DIVIDER -->
+            <div class="exclusive-divider">
+                <span>OR</span>
+            </div>
+
+            <!-- SECONDARY: MANUAL SUITE -->
+            <div id="manual-path">
+                <!-- Symptoms Search & Dropdown -->
+                <section class="form-section" id="symptoms-section">
+                    <label class="form-label">Search Symptoms <span class="lock-icon" id="manual-lock">🔒</span></label>
+
+                    <!-- Custom Dropdown Container -->
+                    <div class="custom-dropdown">
+                        <!-- Search Input -->
+                        <div class="dropdown-search-container">
+                            <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4.35-4.35" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <input type="text" id="symptom-search" class="dropdown-search-input"
+                                placeholder="Search symptoms (e.g., Cough, Fever, Fatigue)" autocomplete="off">
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div class="dropdown-menu" id="symptom-dropdown">
+                            <!-- Respiratory & Throat -->
+                            <div class="dropdown-category">
+                                <div class="category-title">RESPIRATORY & THROAT</div>
+                                <div class="symptom-option" data-symptom="Cough">
+                                    <span>Cough</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Shortness of breath">
+                                    <span>Shortness of breath</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Sore throat">
+                                    <span>Sore throat</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Wheezing">
+                                    <span>Wheezing</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Nasal congestion">
+                                    <span>Nasal congestion</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Phlegm production">
+                                    <span>Phlegm production</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Coughing blood">
+                                    <span>Coughing blood</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
+    
+                            <!-- General & Systemic -->
+                            <div class="dropdown-category">
+                                <div class="category-title">GENERAL & SYSTEMIC</div>
+                                <div class="symptom-option" data-symptom="Fever">
+                                    <span>Fever</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Fatigue">
+                                    <span>Fatigue</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Body aches">
+                                    <span>Body aches</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Chills">
+                                    <span>Chills</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Night sweats">
+                                    <span>Night sweats</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Weight loss">
+                                    <span>Weight loss</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Thirst">
+                                    <span>Thirst</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Sweating">
+                                    <span>Sweating</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Loss of appetite">
+                                    <span>Loss of appetite</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
+    
+                            <!-- Digestive & Gastrointestinal -->
+                            <div class="dropdown-category">
+                                <div class="category-title">DIGESTIVE & GASTROINTESTINAL</div>
+                                <div class="symptom-option" data-symptom="Nausea">
+                                    <span>Nausea</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Vomiting">
+                                    <span>Vomiting</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Diarrhea">
+                                    <span>Diarrhea</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Abdominal pain">
+                                    <span>Abdominal pain</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Bloating">
+                                    <span>Bloating</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Constipation">
+                                    <span>Constipation</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Heartburn">
+                                    <span>Heartburn</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Difficulty swallowing">
+                                    <span>Difficulty swallowing</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
+    
+                            <!-- Muscular & Skeletal -->
+                            <div class="dropdown-category">
+                                <div class="category-title">MUSCULAR & SKELETAL</div>
+                                <div class="symptom-option" data-symptom="Muscle stiffness">
+                                    <span>Muscle stiffness</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Joint pain">
+                                    <span>Joint pain</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Back pain">
+                                    <span>Back pain</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Muscle cramps">
+                                    <span>Muscle cramps</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Joint swelling">
+                                    <span>Joint swelling</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Limited range of motion">
+                                    <span>Limited range of motion</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
+    
+                            <!-- Neurological & Sensory -->
+                            <div class="dropdown-category">
+                                <div class="category-title">NEUROLOGICAL & SENSORY</div>
+                                <div class="symptom-option" data-symptom="Headache">
+                                    <span>Headache</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Dizziness">
+                                    <span>Dizziness</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Numbness">
+                                    <span>Numbness</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Confusion">
+                                    <span>Confusion</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Tremors">
+                                    <span>Tremors</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Tingling sensation">
+                                    <span>Tingling sensation</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Loss of balance">
+                                    <span>Loss of balance</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Blurred vision">
+                                    <span>Blurred vision</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Loss of taste/smell">
+                                    <span>Loss of taste/smell</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Stiff neck">
+                                    <span>Stiff neck</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Light sensitivity">
+                                    <span>Light sensitivity</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Facial droop">
+                                    <span>Facial droop</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Arm weakness">
+                                    <span>Arm weakness</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Speech difficulty">
+                                    <span>Speech difficulty</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
+    
+                            <!-- Skin & Allergic -->
+                            <div class="dropdown-category">
+                                <div class="category-title">SKIN & ALLERGIC</div>
+                                <div class="symptom-option" data-symptom="Rash">
+                                    <span>Rash</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Itching">
+                                    <span>Itching</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Swelling">
+                                    <span>Swelling</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Skin redness">
+                                    <span>Skin redness</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Hives">
+                                    <span>Hives</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Dry skin">
+                                    <span>Dry skin</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
+    
+                            <!-- Cardiovascular -->
+                            <div class="dropdown-category">
+                                <div class="category-title">CARDIOVASCULAR</div>
+                                <div class="symptom-option" data-symptom="Chest pain">
+                                    <span>Chest pain</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Palpitations">
+                                    <span>Palpitations</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Irregular heartbeat">
+                                    <span>Irregular heartbeat</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Fainting">
+                                    <span>Fainting</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div class="symptom-option" data-symptom="Radiating pain">
+                                    <span>Radiating pain</span>
+                                    <svg class="check-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="2" />
+                                        <path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Selected Symptoms Chips -->
+                    <div class="chips-container" id="selected-chips"></div>
+                </section>
+    
+                <!-- Duration Selection -->
+                <section class="form-section" id="duration-section">
+                    <label class="form-label">Duration of Symptoms</label>
+                    <div class="duration-buttons">
+                        <button class="duration-btn" data-duration="< 24 Hours">
+                            < 24 Hours</button>
+                                <button class="duration-btn" data-duration="1-3 Days">1-3 Days</button>
+                                <button class="duration-btn" data-duration="4-7 Days">4-7 Days</button>
+                                <button class="duration-btn" data-duration="1 Week +">1 Week +</button>
+                    </div>
+                </section>
+    
+                <!-- Severity Slider -->
+                <section class="form-section" id="severity-section">
+                    <div class="severity-header">
+                        <label class="form-label">How severe is your discomfort?</label>
+                        <span class="severity-value" id="severity-value">7</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="severity-slider" class="severity-slider" min="1" max="10" value="7">
+                        <div class="slider-labels">
+                            <span class="slider-label">Mild</span>
+                            <span class="slider-label">Moderate</span>
+                            <span class="slider-label">Severe</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Submit Button -->
+            <button class="submit-btn" id="analyze-btn">
+                <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 2v16M2 10h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                Analyze Symptoms
+            </button>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="caution-message">
+                <svg class="caution-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"
+                        fill="currentColor" />
+                </svg>
+                <p class="caution-text"><strong>CAUTION:</strong> This tool provides preliminary analysis only. Always
+                    consult a healthcare professional for medical advice.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js?v=1.1"></script>
+</body>
+</html>

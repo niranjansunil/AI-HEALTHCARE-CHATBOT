@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnosis Results - AI Healthcare Assistant</title>
+    <meta name="description" content="Your personalized diagnosis results with possible conditions and recommendations">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="results-styles.css">
+    <link rel="stylesheet" href="premium-theme.css">
+</head>
+
+<body>
+    <div class="container results-container">
+        <!-- Header -->
+        <header class="results-header">
+            <button class="back-btn" onclick="window.location.href='index.html'">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                New Analysis
+            </button>
+            <h1 class="results-title">Your Diagnosis Results</h1>
+            <p class="results-subtitle">AI-powered analysis based on your symptoms</p>
+
+            <!-- Lab Enhanced Badge (hidden until labs applied) -->
+            <div id="lab-enhanced-badge" class="lab-enhanced-badge" style="display:none;">
+                🧬 Lab-Enhanced Results
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="loading-container">
+            <div class="spinner"></div>
+            <p>Analyzing your symptoms...</p>
+        </div>
+
+        <!-- Results Container -->
+        <div id="results-container" style="display: none;">
+            <!-- Input Summary -->
+            <section class="results-card input-summary">
+                <h2 class="card-title">Your Symptoms</h2>
+                <div class="symptoms-grid" id="symptoms-display"></div>
+                <div class="metadata-grid" id="metadata-display"></div>
+            </section>
+
+            <!-- Red Flags (Emergency Alerts) -->
+            <div id="red-flags-container"></div>
+
+            <!-- Primary Diagnoses -->
+            <section class="results-card">
+                <h2 class="card-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Top Possible Conditions
+                </h2>
+                <div id="primary-diagnoses"></div>
+            </section>
+
+            <!-- ============================================
+                 XAI CLINICAL AUDIT — CONFLICT RESOLUTION
+                 ============================================ -->
+            <section class="results-card xai-audit-card" id="xai-audit-section" style="display: none;">
+                <h2 class="card-title" style="color: var(--accent-cyan);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    XAI Clinical Audit & Conflict Resolution
+                </h2>
+                <p class="section-subtitle">Real-time reasoning based on Pathognomonic Hallmarks and Biomarker weighting.</p>
+                <div id="xai-audit-display" class="xai-audit-grid"></div>
+            </section>
+
+            <!-- ============================================
+                 BLOOD TEST ANALYSIS — LEVEL UP CARD
+                 ============================================ -->
+            <section class="results-card lab-upload-card" id="lab-upload-section">
+                <div class="lab-card-header">
+                    <div class="lab-card-icon">🧬</div>
+                    <div>
+                        <h2 class="card-title" style="margin-bottom: 0.25rem;">Upgrade Your Diagnosis Accuracy</h2>
+                        <p class="lab-card-subtitle">
+                            Your symptoms suggest a few possibilities. Upload a recent CBC or Metabolic Panel report to narrow this down from a <strong>70% match to a 95% match</strong>. We'll scan it for markers like Hemoglobin or Glucose to confirm our findings.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Urgency Flags Container -->
+                <div id="lab-urgency-container" style="display:none;"></div>
+
+                <!-- Upload Zone -->
+                <div class="lab-drop-zone" id="lab-drop-zone">
+                    <div class="lab-loading" id="lab-loading" style="display:none;">
+                        <div class="lab-spinner"></div>
+                        <p>Processing Report...</p>
+                    </div>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" class="lab-upload-icon">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <p class="lab-drop-text"><strong>Drag & drop</strong> your blood report here</p>
+                    <p class="lab-drop-subtext">Supports JPG, PNG, WEBP images — Accepts scanned lab reports</p>
+                    <input type="file" id="bloodReportInput" accept="image/*" style="display:none;">
+                    <button class="lab-browse-btn" onclick="document.getElementById('bloodReportInput').click(); event.stopPropagation();">Browse Files</button>
+                </div>
+
+                <!-- File Preview -->
+                <div id="lab-file-preview" class="lab-file-preview"></div>
+
+                <!-- Scan Button -->
+                <button class="lab-scan-btn" id="scan-report-btn" disabled onclick="processBloodReport()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Scan & Re-Analyze
+                </button>
+
+                <!-- Vitals Verification Panel (hidden until scan) -->
+                <div id="vitals-panel" class="vitals-panel" style="display:none;">
+                    <div class="vitals-panel-header">
+                        <span>✅ Vitals Extracted — Please verify before applying</span>
+                        <button class="vitals-edit-hint">Review & Confirm</button>
+                    </div>
+                    <div class="vitals-grid" id="vitals-grid"></div>
+                    <p class="vitals-notes" id="report-notes"></p>
+
+                    <button class="apply-labs-btn" id="apply-labs-btn" style="display:none;" onclick="applyLabRefinement()">
+                        🧬 Apply Lab Results & Re-Rank Diseases
+                    </button>
+                </div>
+            </section>
+
+            <!-- Disease Combinations -->
+            <section class="results-card" id="combinations-section" style="display: none;">
+                <h2 class="card-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    Possible Combinations
+                </h2>
+                <div id="combinations-display"></div>
+            </section>
+
+            <!-- All Possibilities -->
+            <section class="results-card">
+                <h2 class="card-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 11l3 3L22 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    All Possible Conditions
+                </h2>
+                <div class="all-possibilities-grid" id="all-possibilities"></div>
+            </section>
+
+            <!-- Recommendations -->
+            <section class="results-card recommendations-card">
+                <h2 class="card-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+                            fill="currentColor" />
+                    </svg>
+                    General Recommendations
+                </h2>
+                <div id="recommendations-display"></div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="caution-message">
+                <svg class="caution-icon" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"
+                        fill="currentColor" />
+                </svg>
+                <p class="caution-text"><strong>IMPORTANT DISCLAIMER:</strong> This is a preliminary analysis tool only.
+                    Always consult a qualified healthcare professional for accurate diagnosis and treatment. Do not use
+                    this tool for emergency situations.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="results-script.js"></script>
+    <script src="bloodAnalysis.js?v=20240317"></script>
+</body>
+
+</html>

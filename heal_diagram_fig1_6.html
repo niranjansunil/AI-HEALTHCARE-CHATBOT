@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fig 1.6: Disease Knowledge Base Data Schema</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    padding: 36px 20px;
+    font-family: Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="720" viewBox="0 0 860 720">
+
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 9 3.5, 0 7" fill="#555"/>
+    </marker>
+    <marker id="arr-r" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 9 3.5, 0 7" fill="#C0392B"/>
+    </marker>
+  </defs>
+
+  <rect width="860" height="720" fill="#ffffff"/>
+
+  <!-- ══════════════ TITLE ══════════════ -->
+  <text x="430" y="34" text-anchor="middle" font-family="Arial" font-size="17"
+        font-weight="bold" fill="#1a1a2e">Disease Knowledge Base — Data Schema</text>
+  <text x="430" y="54" text-anchor="middle" font-family="Arial" font-size="11"
+        fill="#777">Fig 1.6: Schema structure of 35+ disease entries in the HEAL diagnostic dataset</text>
+
+  <!-- ══════════════════════════════════════════════════════════
+       CENTRAL SCHEMA ENTITY BOX
+  ══════════════════════════════════════════════════════════ -->
+  <!-- Header -->
+  <rect x="270" y="72" width="320" height="34" rx="8" fill="#2c1654"/>
+  <text x="430" y="94" text-anchor="middle" font-family="Arial" font-size="13"
+        font-weight="bold" fill="#ffffff">&#171; Entity &#187;  DiseaseEntry</text>
+
+  <!-- Schema body -->
+  <rect x="270" y="106" width="320" height="298" rx="0" fill="#F5EEF8" stroke="#7B5EA7" stroke-width="2"/>
+  <rect x="270" y="106" width="320" height="298" rx="0" ry="0" fill="none" stroke="#7B5EA7" stroke-width="2"/>
+
+  <!-- Field rows -->
+  <!-- Row separator lines & fields -->
+  <!-- PK -->
+  <rect x="270" y="106" width="320" height="32" fill="#EDE7F6"/>
+  <text x="285" y="126" font-family="Arial" font-size="10" font-weight="bold" fill="#7B5EA7">PK</text>
+  <text x="310" y="126" font-family="Arial" font-size="11" font-weight="bold" fill="#1a1a2e">disease_id</text>
+  <text x="500" y="126" font-family="Arial" font-size="10" fill="#555" font-style="italic">String  (unique slug)</text>
+
+  <line x1="270" y1="138" x2="590" y2="138" stroke="#7B5EA7" stroke-width="0.7"/>
+  <text x="285" y="156" font-family="Arial" font-size="10" fill="#999">—</text>
+  <text x="310" y="156" font-family="Arial" font-size="11" fill="#1a1a2e">disease_name</text>
+  <text x="500" y="156" font-family="Arial" font-size="10" fill="#555" font-style="italic">String</text>
+
+  <line x1="270" y1="164" x2="590" y2="164" stroke="#7B5EA7" stroke-width="0.7"/>
+  <text x="285" y="182" font-family="Arial" font-size="10" fill="#999">—</text>
+  <text x="310" y="182" font-family="Arial" font-size="11" fill="#1a1a2e">category</text>
+  <text x="500" y="182" font-family="Arial" font-size="10" fill="#555" font-style="italic">Enum  (viral / bacterial…)</text>
+
+  <line x1="270" y1="190" x2="590" y2="190" stroke="#7B5EA7" stroke-width="0.7"/>
+  <text x="285" y="208" font-family="Arial" font-size="10" fill="#2E86C1">FK</text>
+  <text x="310" y="208" font-family="Arial" font-size="11" fill="#1a1a2e">symptoms[ ]</text>
+  <text x="500" y="208" font-family="Arial" font-size="10" fill="#555" font-style="italic">Array&lt;SymptomWeight&gt;</text>
+
+  <line x1="270" y1="216" x2="590" y2="216" stroke="#7B5EA7" stroke-width="0.7"/>
+  <text x="285" y="234" font-family="Arial" font-size="10" fill="#2E86C1">FK</text>
+  <text x="310" y="234" font-family="Arial" font-size="11" fill="#1a1a2e">biomarkers[ ]</text>
+  <text x="500" y="234" font-family="Arial" font-size="10" fill="#555" font-style="italic">Array&lt;BiomarkerRule&gt;</text>
+
+  <line x1="270" y1="242" x2="590" y2="242" stroke="#7B5EA7" stroke-width="0.7"/>
+  <text x="285" y="260" font-family="Arial" font-size="10" fill="#999">—</text>
+  <text x="310" y="260" font-family="Arial" font-size="11" fill="#1a1a2e">base_score</text>
+  <text x="500" y="260" font-family="Arial" font-size="10" fill="#555" font-style="italic">Float  (0.0 – 1.0)</text>
+
+  <line x1="270" y1="268" x2="590" y2="268" stroke="#7B5EA7" stroke-width="0.7"/>
+  <text x="285" y="286" font-family="Arial" font-size="10" fill="#999">—</text>
+  <text x="310" y="286" font-family="Arial" font-size="11" fill="#1a1a2e">confidence_boost</text>
+  <text x="500" y="286" font-family="Arial" font-size="10" fill="#555" font-style="italic">Float  (lab-triggered delta)</text>
+
+  <line x1="270" y1="294" x2="590" y2="294" stroke="#7B5EA7" stroke-width="0.7"/>
+  <text x="285" y="312" font-family="Arial" font-size="10" fill="#C0392B">!</text>
+  <text x="310" y="312" font-family="Arial" font-size="11" fill="#1a1a2e">urgency_level</text>
+  <text x="500" y="312" font-family="Arial" font-size="10" fill="#555" font-style="italic">Enum  (LOW / MED / HIGH)</text>
+
+  <line x1="270" y1="320" x2="590" y2="320" stroke="#7B5EA7" stroke-width="0.7"/>
+  <text x="285" y="338" font-family="Arial" font-size="10" fill="#999">—</text>
+  <text x="310" y="338" font-family="Arial" font-size="11" fill="#1a1a2e">precautions[ ]</text>
+  <text x="500" y="338" font-family="Arial" font-size="10" fill="#555" font-style="italic">Array&lt;String&gt;</text>
+
+  <line x1="270" y1="346" x2="590" y2="346" stroke="#7B5EA7" stroke-width="0.7"/>
+  <text x="285" y="364" font-family="Arial" font-size="10" fill="#999">—</text>
+  <text x="310" y="364" font-family="Arial" font-size="11" fill="#1a1a2e">specialist_referral</text>
+  <text x="500" y="364" font-family="Arial" font-size="10" fill="#555" font-style="italic">String</text>
+
+  <!-- bottom border -->
+  <rect x="270" y="104" width="320" height="300" rx="8" fill="none" stroke="#7B5EA7" stroke-width="2"/>
+
+  <!-- ══════════════ LEFT CHILD: SymptomWeight ══════════════ -->
+  <!-- arrow -->
+  <line x1="270" y1="210" x2="195" y2="210" stroke="#2E86C1" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="30" y="150" width="165" height="28" rx="6" fill="#2E86C1"/>
+  <text x="112" y="169" text-anchor="middle" font-family="Arial" font-size="11"
+        font-weight="bold" fill="#fff">&#171; Object &#187;  SymptomWeight</text>
+
+  <rect x="30" y="178" width="165" height="114" rx="0" fill="#EBF5FB" stroke="#2E86C1" stroke-width="1.8"/>
+  <text x="45" y="198" font-family="Arial" font-size="10" font-weight="bold" fill="#2E86C1">PK</text>
+  <text x="68" y="198" font-family="Arial" font-size="10.5" fill="#1a1a2e">symptom_key</text>
+  <text x="45" y="198" font-family="Arial" font-size="10" fill="#2E86C1">  </text>
+
+  <line x1="30" y1="204" x2="195" y2="204" stroke="#2E86C1" stroke-width="0.6"/>
+  <text x="45" y="220" font-family="Arial" font-size="10.5" fill="#1a1a2e">weight</text>
+  <text x="130" y="220" font-family="Arial" font-size="10" fill="#555" font-style="italic">Float</text>
+
+  <line x1="30" y1="228" x2="195" y2="228" stroke="#2E86C1" stroke-width="0.6"/>
+  <text x="45" y="244" font-family="Arial" font-size="10.5" fill="#1a1a2e">is_pathognomonic</text>
+  <text x="155" y="244" font-family="Arial" font-size="10" fill="#555" font-style="italic">Bool</text>
+
+  <line x1="30" y1="252" x2="195" y2="252" stroke="#2E86C1" stroke-width="0.6"/>
+  <text x="45" y="268" font-family="Arial" font-size="10.5" fill="#1a1a2e">severity_modifier</text>
+  <text x="155" y="268" font-family="Arial" font-size="10" fill="#555" font-style="italic">Float</text>
+
+  <line x1="30" y1="276" x2="195" y2="276" stroke="#2E86C1" stroke-width="0.6"/>
+  <text x="45" y="292" font-family="Arial" font-size="10.5" fill="#1a1a2e">duration_modifier</text>
+  <text x="155" y="292" font-family="Arial" font-size="10" fill="#555" font-style="italic">Float</text>
+
+  <rect x="30" y="178" width="165" height="114" rx="6" fill="none" stroke="#2E86C1" stroke-width="1.8"/>
+
+  <!-- ══════════════ RIGHT CHILD: BiomarkerRule ══════════════ -->
+  <line x1="590" y1="236" x2="640" y2="236" stroke="#C0392B" stroke-width="1.5" marker-end="url(#arr-r)"/>
+
+  <rect x="640" y="176" width="185" height="28" rx="6" fill="#C0392B"/>
+  <text x="732" y="195" text-anchor="middle" font-family="Arial" font-size="11"
+        font-weight="bold" fill="#fff">&#171; Object &#187;  BiomarkerRule</text>
+
+  <rect x="640" y="204" width="185" height="132" rx="0" fill="#FDEDEC" stroke="#E74C3C" stroke-width="1.8"/>
+  <text x="655" y="222" font-family="Arial" font-size="10" font-weight="bold" fill="#C0392B">PK</text>
+  <text x="678" y="222" font-family="Arial" font-size="10.5" fill="#1a1a2e">biomarker_key</text>
+
+  <line x1="640" y1="228" x2="825" y2="228" stroke="#E74C3C" stroke-width="0.6"/>
+  <text x="655" y="244" font-family="Arial" font-size="10.5" fill="#1a1a2e">min_threshold</text>
+  <text x="760" y="244" font-family="Arial" font-size="10" fill="#555" font-style="italic">Float</text>
+
+  <line x1="640" y1="252" x2="825" y2="252" stroke="#E74C3C" stroke-width="0.6"/>
+  <text x="655" y="268" font-family="Arial" font-size="10.5" fill="#1a1a2e">max_threshold</text>
+  <text x="760" y="268" font-family="Arial" font-size="10" fill="#555" font-style="italic">Float</text>
+
+  <line x1="640" y1="276" x2="825" y2="276" stroke="#E74C3C" stroke-width="0.6"/>
+  <text x="655" y="292" font-family="Arial" font-size="10.5" fill="#1a1a2e">boost_value</text>
+  <text x="760" y="292" font-family="Arial" font-size="10" fill="#555" font-style="italic">Float</text>
+
+  <line x1="640" y1="300" x2="825" y2="300" stroke="#E74C3C" stroke-width="0.6"/>
+  <text x="655" y="316" font-family="Arial" font-size="10.5" fill="#1a1a2e">direction</text>
+  <text x="760" y="316" font-family="Arial" font-size="10" fill="#555" font-style="italic">Enum (HIGH/LOW)</text>
+
+  <line x1="640" y1="324" x2="825" y2="324" stroke="#E74C3C" stroke-width="0.6"/>
+  <text x="655" y="340" font-family="Arial" font-size="10.5" fill="#1a1a2e">unit</text>
+  <text x="760" y="340" font-family="Arial" font-size="10" fill="#555" font-style="italic">String  (g/dL, /cumm…)</text>
+
+  <rect x="640" y="204" width="185" height="132" rx="6" fill="none" stroke="#E74C3C" stroke-width="1.8"/>
+
+  <!-- ══════════════ SAMPLE DISEASE TABLE ══════════════ -->
+  <!-- Divider label -->
+  <line x1="30" y1="420" x2="830" y2="420" stroke="#cccccc" stroke-width="1" stroke-dasharray="5,3"/>
+  <text x="430" y="415" text-anchor="middle" font-family="Arial" font-size="10"
+        fill="#aaaaaa">Sample entries from the 35+ disease dataset</text>
+
+  <!-- Table header -->
+  <rect x="30" y="424" width="800" height="28" rx="6" fill="#2c1654"/>
+  <text x="115" y="442" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#fff">Disease Name</text>
+  <line x1="200" y1="424" x2="200" y2="452" stroke="#ffffff" stroke-width="0.6"/>
+  <text x="280" y="442" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#fff">Category</text>
+  <line x1="360" y1="424" x2="360" y2="452" stroke="#ffffff" stroke-width="0.6"/>
+  <text x="470" y="442" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#fff">Key Symptoms</text>
+  <line x1="580" y1="424" x2="580" y2="452" stroke="#ffffff" stroke-width="0.6"/>
+  <text x="660" y="442" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#fff">Biomarker</text>
+  <line x1="740" y1="424" x2="740" y2="452" stroke="#ffffff" stroke-width="0.6"/>
+  <text x="790" y="442" text-anchor="middle" font-family="Arial" font-size="11" font-weight="bold" fill="#fff">Urgency</text>
+
+  <!-- Table rows -->
+  <!-- Row 1 -->
+  <rect x="30" y="452" width="800" height="28" fill="#fafafa" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="115" y="470" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#1a1a2e">Dengue Fever</text>
+  <text x="280" y="470" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Viral</text>
+  <text x="470" y="470" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Fever · Joint pain · Rash</text>
+  <text x="660" y="470" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#C0392B">Platelets &lt; 100k</text>
+  <rect x="765" y="458" width="40" height="15" rx="4" fill="#FDEDEC" stroke="#E74C3C" stroke-width="1"/>
+  <text x="785" y="469" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="#C0392B">HIGH</text>
+
+  <!-- Row 2 -->
+  <rect x="30" y="480" width="800" height="28" fill="#f5f5f5" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="115" y="498" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#1a1a2e">Iron-Deficiency Anemia</text>
+  <text x="280" y="498" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Hematologic</text>
+  <text x="470" y="498" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Fatigue · Pallor · Dizziness</text>
+  <text x="660" y="498" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#C0392B">Hb &lt; 8 g/dL</text>
+  <rect x="763" y="486" width="44" height="15" rx="4" fill="#FEF9E7" stroke="#D4AC0D" stroke-width="1"/>
+  <text x="785" y="497" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="#B7950B">MED</text>
+
+  <!-- Row 3 -->
+  <rect x="30" y="508" width="800" height="28" fill="#fafafa" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="115" y="526" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#1a1a2e">Bacterial Pneumonia</text>
+  <text x="280" y="526" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Bacterial</text>
+  <text x="470" y="526" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Cough · Fever · Chest pain</text>
+  <text x="660" y="526" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#C0392B">WBC &gt; 15,000</text>
+  <rect x="765" y="514" width="40" height="15" rx="4" fill="#FDEDEC" stroke="#E74C3C" stroke-width="1"/>
+  <text x="785" y="525" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="#C0392B">HIGH</text>
+
+  <!-- Row 4 -->
+  <rect x="30" y="536" width="800" height="28" fill="#f5f5f5" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="115" y="554" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#1a1a2e">Hypoglycemia</text>
+  <text x="280" y="554" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Metabolic</text>
+  <text x="470" y="554" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Tremors · Sweating · Confusion</text>
+  <text x="660" y="554" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#C0392B">Blood glucose &lt; 70</text>
+  <rect x="765" y="542" width="40" height="15" rx="4" fill="#FDEDEC" stroke="#E74C3C" stroke-width="1"/>
+  <text x="785" y="553" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="#C0392B">HIGH</text>
+
+  <!-- Row 5 -->
+  <rect x="30" y="564" width="800" height="28" fill="#fafafa" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="115" y="582" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#1a1a2e">Allergic Rhinitis</text>
+  <text x="280" y="582" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Allergic</text>
+  <text x="470" y="582" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Sneezing · Runny nose · Itching</text>
+  <text x="660" y="582" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">IgE elevated</text>
+  <rect x="763" y="570" width="44" height="15" rx="4" fill="#E9F7EF" stroke="#1E8449" stroke-width="1"/>
+  <text x="785" y="581" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="#1E8449">LOW</text>
+
+  <!-- Row 6 -->
+  <rect x="30" y="592" width="800" height="28" fill="#f5f5f5" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="115" y="610" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#1a1a2e">Hyperthyroidism</text>
+  <text x="280" y="610" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Endocrine</text>
+  <text x="470" y="610" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#555">Palpitations · Weight loss · Anxiety</text>
+  <text x="660" y="610" text-anchor="middle" font-family="Arial" font-size="10.5" fill="#C0392B">TSH &lt; 0.4 mIU/L</text>
+  <rect x="763" y="598" width="44" height="15" rx="4" fill="#FEF9E7" stroke="#D4AC0D" stroke-width="1"/>
+  <text x="785" y="609" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="#B7950B">MED</text>
+
+  <!-- Row 7 - ellipsis -->
+  <rect x="30" y="620" width="800" height="28" fill="#fafafa" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="430" y="638" text-anchor="middle" font-family="Arial" font-size="12"
+        fill="#aaaaaa" letter-spacing="6">· · · 29 more entries · · ·</text>
+
+  <!-- Table border -->
+  <rect x="30" y="424" width="800" height="224" rx="6" fill="none" stroke="#cccccc" stroke-width="1.5"/>
+
+  <!-- ══════════════ CAPTION ══════════════ -->
+  <text x="430" y="670" text-anchor="middle" font-family="Arial" font-size="10.5"
+        fill="#555" font-style="italic">
+    Fig 1.6: Disease Knowledge Base Data Schema — Entity structure and sample entries from the HEAL diagnostic dataset (35+ diseases).
+  </text>
+
+  <!-- ══════════════ LEGEND ══════════════ -->
+  <rect x="30" y="680" width="800" height="30" rx="7" fill="#f5f5f5" stroke="#ddd" stroke-width="1"/>
+  <text x="55" y="699" font-family="Arial" font-size="10" font-weight="bold" fill="#2c1654">PK</text>
+  <text x="75" y="699" font-family="Arial" font-size="10" fill="#444">= Primary Key</text>
+  <text x="205" y="699" font-family="Arial" font-size="10" font-weight="bold" fill="#2E86C1">FK</text>
+  <text x="225" y="699" font-family="Arial" font-size="10" fill="#444">= Foreign Key / Nested Object</text>
+  <text x="435" y="699" font-family="Arial" font-size="10" font-weight="bold" fill="#C0392B">!</text>
+  <text x="450" y="699" font-family="Arial" font-size="10" fill="#444">= Urgency Flag Field</text>
+  <text x="600" y="699" font-family="Arial" font-size="10" fill="#444">&#171;Object&#187; = Nested sub-schema</text>
+
+</svg>
+</body>
+</html>
