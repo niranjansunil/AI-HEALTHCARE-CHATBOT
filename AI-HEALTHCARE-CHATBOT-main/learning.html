@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heal — Learning Corner</title>
+    <meta name="description" content="Explore diseases, symptoms, and treatments in an immersive medical encyclopedia.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #020617;
+            color: #e2e8f0;
+            overflow: hidden;
+            height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0a0f1e; }
+        ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 999px; }
+
+        /* ===== ANIMATED GRID ===== */
+        .grid-bg {
+            position: fixed; inset: 0; z-index: 0; opacity: 0.05;
+            background-image:
+                linear-gradient(rgba(56,189,248,0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56,189,248,0.3) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridDrift 25s linear infinite;
+        }
+        @keyframes gridDrift {
+            0% { transform: translate(0,0); }
+            100% { transform: translate(60px,60px); }
+        }
+
+        #labCanvas {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+            height: 56px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 1.5rem;
+            background: rgba(2,6,23,0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(56,189,248,0.08);
+        }
+        .top-bar-left { display: flex; align-items: center; gap: 0.75rem; }
+        .logo-dot {
+            width: 28px; height: 28px; border-radius: 8px;
+            background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logo-dot svg { width: 15px; height: 15px; color: #020617; }
+        .top-bar h1 { font-family: 'Outfit'; font-size: 1rem; font-weight: 700; color: #fff; }
+        .top-bar .badge {
+            font-size: 0.6rem; color: #38bdf8; border: 1px solid rgba(56,189,248,0.2);
+            padding: 0.1rem 0.5rem; border-radius: 999px; margin-left: 0.4rem;
+        }
+        .back-link {
+            display: flex; align-items: center; gap: 0.4rem;
+            color: #64748b; text-decoration: none; font-size: 0.8rem; font-weight: 500;
+            padding: 0.35rem 0.8rem; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.06); transition: all 0.3s;
+        }
+        .back-link:hover { color: #fff; border-color: rgba(56,189,248,0.25); }
+        .back-link svg { width: 14px; height: 14px; }
+
+        /* ===== THREE PANE LAYOUT ===== */
+        .three-pane {
+            position: relative; z-index: 10;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            height: calc(100vh - 56px);
+            margin-top: 56px;
+        }
+
+        /* ===== LEFT: DIRECTORY PANE ===== */
+        .dir-pane {
+            width: 280px; min-width: 280px;
+            display: flex; flex-direction: column;
+            border-right: 1px solid rgba(56,189,248,0.06);
+            background: rgba(2,6,23,0.3);
+        }
+        .dir-search-wrap {
+            padding: 1.25rem; border-bottom: 1px solid rgba(56,189,248,0.06);
+        }
+        .dir-search {
+            width: 100%; background: rgba(56,189,248,0.05);
+            border: 1px solid rgba(56,189,248,0.1);
+            border-radius: 10px; padding: 0.7rem 1rem;
+            color: #fff; font-family: 'Inter'; font-size: 0.85rem;
+            outline: none; transition: all 0.3s ease;
+        }
+        .dir-search:focus {
+            background: rgba(56,189,248,0.08);
+            border-color: rgba(56,189,248,0.3);
+            box-shadow: 0 0 15px rgba(56,189,248,0.1);
+        }
+        .dir-list { flex: 1; overflow-y: auto; padding: 1.25rem 0; }
+        .dir-list::-webkit-scrollbar { width: 4px; }
+        .dir-list::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.1); border-radius: 10px; }
+        .dir-section-title {
+            padding: 0.5rem 1.5rem 0.75rem;
+            font-family: 'Outfit'; font-size: 0.65rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.15em;
+            color: rgba(56,189,248,0.3);
+        }
+        .dir-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.7rem 1.25rem; cursor: pointer;
+            transition: all 0.25s ease; position: relative;
+            border-left: 3px solid transparent;
+        }
+        .dir-item:hover {
+            background: rgba(56,189,248,0.04);
+            border-left-color: rgba(56,189,248,0.2);
+        }
+        .dir-item.active {
+            background: rgba(56,189,248,0.08);
+            border-left-color: #38bdf8;
+        }
+        .dir-item.active::before {
+            content: '';
+            position: absolute; left: -3px; top: 15%; height: 70%; width: 3px;
+            background: #38bdf8; border-radius: 999px;
+            box-shadow: 0 0 10px rgba(56,189,248,0.6);
+        }
+        .dir-item .dir-emoji { font-size: 1.2rem; flex-shrink: 0; line-height: 1; }
+        .dir-info { display: flex; flex-direction: column; min-width: 0; }
+        .dir-item .dir-name {
+            font-size: 0.85rem; font-weight: 500; color: #94a3b8; transition: color 0.25s;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .dir-item.active .dir-name { color: #f1f5f9; font-weight: 600; }
+        .dir-item .dir-cat {
+            font-size: 0.6rem; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .dir-item.active .dir-cat { color: rgba(56,189,248,0.5); }
+        .dir-pane, .symptom-pane { min-height: 0; }
+
+        /* ===== CENTER: CORE CONDITION ===== */
+        .center-pane {
+            overflow-y: auto;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; padding: 3rem 2.5rem;
+        }
+        .center-glow {
+            position: absolute; top: 35%; left: 50%; transform: translate(-50%,-50%);
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 65%);
+            pointer-events: none; transition: opacity 0.6s;
+        }
+
+        /* Placeholder */
+        .placeholder-view {
+            text-align: center; position: relative; z-index: 1;
+        }
+        .placeholder-view .ph-icon {
+            width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 1.5rem;
+            background: rgba(56,189,248,0.06); border: 1.5px solid rgba(56,189,248,0.1);
+            display: flex; align-items: center; justify-content: center;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-8px); } }
+        .placeholder-view .ph-icon svg { width: 36px; height: 36px; color: rgba(56,189,248,0.4); }
+        .placeholder-view h2 { font-family:'Outfit'; font-size:1.5rem; font-weight:700; color:#fff; margin-bottom:0.5rem; }
+        .placeholder-view p { font-size:0.9rem; color:#64748b; max-width:320px; margin:0 auto; }
+
+        /* Disease detail */
+        .disease-detail {
+            position: relative; z-index: 1; max-width: 520px; text-align: center;
+            opacity: 0; transform: translateY(20px) scale(0.95);
+            transition: all 0.5s cubic-bezier(0.22,1,0.36,1);
+            display: none;
+        }
+        .disease-detail.visible { opacity: 1; transform: translateY(0) scale(1); display: block; }
+
+        .dd-icon-wrap {
+            width: 120px; height: 120px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, rgba(56,189,248,0.1) 0%, transparent 70%);
+            margin: 0 auto 1.5rem; position: relative;
+        }
+        .dd-icon-wrap::before {
+            content:''; position:absolute; inset:-6px; border-radius:50%;
+            border: 1.5px solid rgba(56,189,248,0.1); animation: iconSpin 8s linear infinite;
+        }
+        @keyframes iconSpin { to { transform: rotate(360deg); } }
+        .dd-icon-wrap .dd-emoji { font-size: 3.5rem; filter: drop-shadow(0 0 16px rgba(56,189,248,0.25)); }
+
+        .dd-name { font-family:'Outfit'; font-size:2.2rem; font-weight:800; color:#fff; margin-bottom:0.4rem; }
+        .dd-category {
+            font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em;
+            color: rgba(56,189,248,0.5); margin-bottom:1.5rem;
+        }
+        .dd-desc {
+            font-size:0.95rem; color:#cbd5e1; line-height:1.8; text-align:justify;
+            white-space: pre-wrap; margin-top: 1.5rem;
+        }
+
+        /* ===== RIGHT: TABBED PANE ===== */
+        .symptom-pane {
+            border-left: 1px solid rgba(56,189,248,0.06);
+            padding: 0;
+            background: rgba(2,6,23,0.5);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        .pane-tabs {
+            display: flex; border-bottom: 1px solid rgba(56,189,248,0.08);
+            flex-shrink: 0;
+        }
+        .pane-tab {
+            flex: 1; padding: 0.9rem 0.75rem; text-align: center;
+            font-family: 'Outfit'; font-size: 0.72rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            color: #64748b; cursor: pointer; transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .pane-tab.active { color: #38bdf8; background: rgba(56,189,248,0.04); border-bottom-color: #38bdf8; }
+        .pane-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
+        .pane-body::-webkit-scrollbar { width: 5px; }
+        .pane-body::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.1); border-radius: 999px; }
+        .pane-body.hidden { display: none; }
+        .pane-tab:hover { color: #94a3b8; }
+        .pane-tab.active {
+            color: #38bdf8;
+            border-bottom-color: #38bdf8;
+        }
+        .pane-body {
+            flex: 1; overflow-y: auto; padding: 0.5rem 0;
+        }
+        .pane-body.hidden { display: none; }
+
+        /* Placeholder for right pane */
+        .right-placeholder {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            flex: 1; text-align: center; padding: 2rem; color: #334155;
+        }
+        .right-placeholder svg { width: 32px; height: 32px; margin-bottom: 0.75rem; opacity: 0.3; }
+        .right-placeholder p { font-size: 0.85rem; }
+
+        /* Symptom item with dotted indicator */
+        .symptom-item {
+            display: flex; align-items: flex-start; gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid rgba(56,189,248,0.03);
+            opacity: 0; transform: translateX(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .symptom-item.visible { opacity: 1; transform: translateX(0); }
+
+        .symptom-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #38bdf8; flex-shrink: 0; margin-top: 0.45rem;
+            box-shadow: 0 0 6px rgba(56,189,248,0.4);
+        }
+        .symptom-dot.critical { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.4); }
+        .symptom-dot.high { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.4); }
+
+        .symptom-info { flex: 1; }
+        .symptom-name { font-size: 0.88rem; color: #cbd5e1; font-weight: 500; margin-bottom: 0.3rem; }
+        .symptom-weight-bar {
+            height: 3px; border-radius: 999px; background: rgba(56,189,248,0.1);
+            overflow: hidden; max-width: 140px;
+        }
+        .symptom-weight-fill {
+            height: 100%; border-radius: 999px;
+            transition: width 0.7s cubic-bezier(0.22,1,0.36,1);
+        }
+        .symptom-weight-fill.low { background: #22c55e; }
+        .symptom-weight-fill.med { background: #38bdf8; }
+        .symptom-weight-fill.high { background: #f59e0b; }
+        .symptom-weight-fill.critical { background: #ef4444; }
+        .symptom-weight-label {
+            font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+            margin-top: 0.2rem;
+        }
+        .symptom-weight-label.low { color: #22c55e; }
+        .symptom-weight-label.med { color: #38bdf8; }
+        .symptom-weight-label.high { color: #f59e0b; }
+        .symptom-weight-label.critical { color: #ef4444; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 960px) {
+            .three-pane {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+            }
+            .dir-pane {
+                border-right: none;
+                border-bottom: 1px solid rgba(56,189,248,0.06);
+                max-height: 200px;
+                display: flex; flex-wrap: wrap; gap: 0; padding: 0.5rem;
+                overflow-x: auto; overflow-y: hidden;
+            }
+            .dir-item { white-space: nowrap; padding: 0.5rem 0.8rem; border-left: none; border-bottom: 2px solid transparent; }
+            .dir-item.active { border-left: none; border-bottom-color: #38bdf8; }
+            .dir-item.active::before { display: none; }
+            .dir-section-title { display: none; }
+            .symptom-pane { border-left: none; border-top: 1px solid rgba(56,189,248,0.06); max-height: 250px; }
+            .dd-name { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <canvas id="labCanvas"></canvas>
+
+    <!-- TOP BAR -->
+    <header class="top-bar">
+        <div class="top-bar-left">
+            <a href="landing.html" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;">
+                <div class="logo-dot">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                    </svg>
+                </div>
+                <h1>Heal</h1>
+            </a>
+            <span class="badge">Learning Corner (Live)</span>
+        </div>
+        <a href="landing.html" class="back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+            </svg>
+            Back
+        </a>
+    </header>
+
+    <!-- THREE PANE -->
+    <div class="three-pane">
+        <!-- LEFT: Directory -->
+        <div class="dir-pane">
+            <div class="dir-search-wrap">
+                <input type="text" class="dir-search" placeholder="Search diseases or symptoms..." id="dirSearch">
+            </div>
+            <div class="dir-list" id="dirPane"></div>
+        </div>
+
+        <!-- CENTER: Core -->
+        <div class="center-pane" id="centerPane">
+            <div class="center-glow" id="centerGlow"></div>
+            <div class="placeholder-view" id="placeholderView">
+                <div class="ph-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
+                    </svg>
+                </div>
+                <h2>Medical Encyclopedia</h2>
+                <p>Select a condition from the directory to explore its clinical profile and symptoms.</p>
+            </div>
+            <div class="disease-detail" id="diseaseDetail">
+                <div class="dd-icon-wrap"><span class="dd-emoji" id="ddEmoji"></span></div>
+                <h2 class="dd-name" id="ddName"></h2>
+                <div class="dd-category" id="ddCategory"></div>
+                <p class="dd-desc" id="ddDesc"></p>
+            </div>
+        </div>
+
+        <!-- RIGHT: Symptoms -->
+        <div class="symptom-pane" id="symptomPane">
+            <div class="pane-tabs">
+                <div class="pane-tab active" data-tab="symptoms" onclick="switchTab('symptoms')">Clinical Symptoms</div>
+                <div class="pane-tab" data-tab="medications" onclick="switchTab('medications')">Medications</div>
+            </div>
+            <div class="pane-body" id="symptomBody">
+                <div class="right-placeholder" id="rightPlaceholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/>
+                    </svg>
+                    <p>Select a disease to view symptoms and medications.</p>
+                </div>
+            </div>
+            <div class="pane-body hidden" id="medsBody"></div>
+        </div>
+    </div>
+
+    <script>
+    // ========== FULL DISEASE DATABASE ==========
+    const DISEASES = [
+        { id:'cold', emoji:'🤧', name:'Common Cold', category:'Respiratory', desc:'The common cold is a viral infectious disease of the upper respiratory tract that primarily affects the nasal mucosa. Over 200 virus strains are implicated, with rhinoviruses being the most common cause.\n\nSymptoms typically resolve within 7-10 days without specific treatment. Management focuses on symptomatic relief, rest, and adequate hydration. It is the most frequent infectious disease in humans, with adults averaging 2-3 episodes per year.',
+            symptoms:[{n:'Nasal congestion',w:95},{n:'Runny nose',w:90},{n:'Sneezing',w:85},{n:'Sore throat',w:75},{n:'Mild cough',w:65},{n:'Low-grade fever',w:40},{n:'Fatigue',w:50}],
+            meds:['Acetaminophen / Ibuprofen — Antipyretic and analgesic for fever and body aches','Pseudoephedrine — Nasal decongestant to relieve congestion','Dextromethorphan — Cough suppressant for dry, irritating cough','Saline nasal spray — Moisturizes nasal passages and clears mucus','Vitamin C & Zinc — May reduce duration if taken early','Rest & Hydration — Cornerstone of management']},
+        { id:'flu', emoji:'🤒', name:'Influenza (Flu)', category:'Respiratory', desc:'Influenza is a contagious respiratory illness caused by influenza viruses that infect the nose, throat, and lungs. It can cause mild to severe illness and can lead to hospitalization or death in high-risk groups.\n\nSeasonal epidemics occur every year, with vaccination being the most effective preventive measure. Antiviral medications like Oseltamivir can reduce symptom duration by 1-2 days if administered within 48 hours.',
+            symptoms:[{n:'High fever (>38.5°C)',w:95},{n:'Body aches & myalgia',w:90},{n:'Dry cough',w:82},{n:'Fatigue & weakness',w:88},{n:'Headache',w:72},{n:'Sore throat',w:55},{n:'Chills & sweats',w:78}],
+            meds:['Oseltamivir (Tamiflu) — Neuraminidase inhibitor, reduces duration by 1-2 days','Zanamivir (Relenza) — Inhaled antiviral for Influenza A & B','Acetaminophen — Fever and pain management','Fluid replacement therapy — Oral or IV rehydration','Rest & isolation — 5-7 days bed rest to prevent transmission']},
+        { id:'covid', emoji:'🦠', name:'COVID-19', category:'Respiratory', desc:'COVID-19 is caused by SARS-CoV-2, a novel coronavirus that emerged in late 2019. The disease ranges from asymptomatic to critical illness with acute respiratory distress syndrome (ARDS).\n\nDistinctive features include loss of taste/smell, and the disease can cause long-term complications ("Long COVID"). Vaccination, masking, and ventilation remain key prevention strategies.',
+            symptoms:[{n:'Fever',w:88},{n:'Dry cough',w:85},{n:'Fatigue',w:80},{n:'Loss of taste/smell',w:92},{n:'Shortness of breath',w:75},{n:'Body aches',w:65},{n:'Headache',w:60},{n:'Sore throat',w:50}],
+            meds:['Paxlovid (Nirmatrelvir/Ritonavir) — Antiviral for high-risk patients within 5 days','Dexamethasone — Corticosteroid for severe/critical cases requiring oxygen','Remdesivir — IV antiviral for hospitalized patients','Acetaminophen — Fever and pain management','Prone positioning — Improves oxygenation in severe cases']},
+        { id:'gastro', emoji:'🤮', name:'Gastroenteritis', category:'Gastrointestinal', desc:'Gastroenteritis (stomach flu) is inflammation of the stomach and intestines, most commonly caused by viral infections (norovirus, rotavirus) or bacterial contamination of food or water.\n\nThe primary concern is dehydration, especially in young children and elderly patients. Oral rehydration therapy is the cornerstone of management, with antiemetics and antidiarrheals used for symptomatic relief.',
+            symptoms:[{n:'Nausea & vomiting',w:95},{n:'Watery diarrhea',w:92},{n:'Abdominal cramps',w:88},{n:'Low-grade fever',w:60},{n:'Dehydration signs',w:70},{n:'Loss of appetite',w:75},{n:'Body aches',w:45}],
+            meds:['Oral Rehydration Salts (ORS) — Electrolyte and fluid replacement','Ondansetron (Zofran) — Antiemetic for severe nausea/vomiting','Loperamide (Imodium) — Antidiarrheal (not for bacterial causes)','Probiotics — Restores gut flora balance','IV fluids — For severe dehydration cases']},
+        { id:'migraine', emoji:'🧠', name:'Migraine', category:'Neurological', desc:'Migraine is a complex neurological condition characterized by recurrent episodes of moderate to severe headache, often unilateral and pulsating. It affects approximately 15% of the global population.\n\nMigraines involve activation of the trigeminovascular system and cortical spreading depression. Triggers include stress, hormonal changes, certain foods, and sleep disturbances. Treatment includes acute abortive therapy and chronic prophylaxis.',
+            symptoms:[{n:'Severe throbbing headache',w:98},{n:'Nausea',w:80},{n:'Light sensitivity (photophobia)',w:85},{n:'Sound sensitivity (phonophobia)',w:78},{n:'Visual aura',w:55},{n:'Vomiting',w:50},{n:'Dizziness',w:45}],
+            meds:['Sumatriptan (Imitrex) — Serotonin receptor agonist, first-line abortive therapy','Ibuprofen / Naproxen — NSAIDs for mild-moderate attacks','Topiramate — Prophylactic anticonvulsant for chronic migraine','Propranolol — Beta-blocker for migraine prevention','CGRP inhibitors (Aimovig) — Monthly injection for chronic migraine prevention']},
+        { id:'asthma', emoji:'🫁', name:'Asthma Attack', category:'Respiratory', desc:'Asthma is a chronic inflammatory disorder of the airways characterized by episodic and reversible airflow obstruction, bronchial hyperresponsiveness, and underlying inflammation.\n\nDuring an acute attack, smooth muscle contraction, mucosal edema, and excess mucus production lead to significant airway narrowing. Management includes rescue bronchodilators (SABA) and long-term controller medications (ICS, LABA).',
+            symptoms:[{n:'Wheezing',w:95},{n:'Shortness of breath',w:92},{n:'Chest tightness',w:85},{n:'Persistent cough',w:78},{n:'Rapid breathing',w:70},{n:'Difficulty speaking',w:60},{n:'Anxiety',w:50}],
+            meds:['Albuterol (Salbutamol) — Short-acting beta-agonist rescue inhaler','Fluticasone (Flovent) — Inhaled corticosteroid controller','Salmeterol/Fluticasone (Advair) — Combination LABA+ICS','Montelukast (Singulair) — Leukotriene receptor antagonist','Prednisolone — Oral corticosteroid for acute exacerbations']},
+        { id:'allergy', emoji:'🌸', name:'Allergic Reaction', category:'Immunological', desc:'Allergic reactions occur when the immune system overreacts to a normally harmless substance (allergen), triggering an IgE-mediated cascade involving mast cell degranulation and histamine release.\n\nReactions range from mild (rhinitis, urticaria) to life-threatening anaphylaxis. Common allergens include pollen, dust mites, foods, insect venom, and medications. Epinephrine is the first-line treatment for anaphylaxis.',
+            symptoms:[{n:'Skin rash / hives',w:90},{n:'Itching',w:88},{n:'Swelling (face/lips/throat)',w:75},{n:'Sneezing',w:70},{n:'Watery eyes',w:72},{n:'Nasal congestion',w:65},{n:'Breathing difficulty',w:55}],
+            meds:['Epinephrine (EpiPen) — First-line for anaphylaxis, IM injection','Cetirizine (Zyrtec) — Second-gen antihistamine for mild reactions','Diphenhydramine (Benadryl) — First-gen antihistamine, sedating','Prednisone — Oral corticosteroid for severe allergic reactions','Allergen immunotherapy — Long-term desensitization injections']},
+        { id:'heart-attack', emoji:'💔', name:'Myocardial Infarction', category:'Cardiovascular', desc:'A myocardial infarction (heart attack) occurs when blood flow to a section of the heart muscle is blocked, usually by a blood clot in a coronary artery. This leads to ischemia and necrosis of cardiac tissue.\n\nTime is critical — "Time is Muscle." Percutaneous coronary intervention (PCI) within 90 minutes is the gold standard treatment. Risk factors include hypertension, hyperlipidemia, diabetes, smoking, and family history.',
+            symptoms:[{n:'Chest pain/pressure',w:98},{n:'Pain radiating to arm/jaw',w:82},{n:'Shortness of breath',w:78},{n:'Cold sweat',w:72},{n:'Nausea',w:55},{n:'Dizziness / lightheadedness',w:60},{n:'Extreme fatigue',w:50}],
+            meds:['Aspirin 325mg — Immediate antiplatelet therapy','Nitroglycerin — Sublingual for chest pain relief','Heparin — Anticoagulation during PCI procedure','Clopidogrel (Plavix) — Dual antiplatelet therapy post-stent','Atorvastatin — High-intensity statin for cholesterol management']},
+        { id:'stroke', emoji:'⚡', name:'Stroke', category:'Neurological', desc:'A stroke occurs when blood supply to part of the brain is interrupted (ischemic) or when a blood vessel in the brain ruptures (hemorrhagic). It is a medical emergency requiring immediate treatment.\n\nUse FAST recognition: Face drooping, Arm weakness, Speech difficulty, Time to call emergency. Thrombolytic therapy (tPA) must be administered within 4.5 hours of symptom onset for ischemic stroke.',
+            symptoms:[{n:'Sudden facial drooping',w:95},{n:'Arm/leg weakness (one side)',w:95},{n:'Speech difficulty/slurring',w:90},{n:'Confusion',w:78},{n:'Severe headache (sudden)',w:72},{n:'Vision problems',w:65},{n:'Loss of balance',w:60}],
+            meds:['Alteplase (tPA) — Thrombolytic, must be given within 4.5 hours','Aspirin — Antiplatelet within 24-48 hours of ischemic stroke','Warfarin / DOACs — Long-term anticoagulation for AF-related stroke','Antihypertensives — Blood pressure management post-stroke','Rehabilitation therapy — Physical, occupational, and speech therapy']},
+        { id:'appendicitis', emoji:'🏥', name:'Appendicitis', category:'Surgical', desc:'Appendicitis is acute inflammation of the appendix, a small pouch attached to the large intestine. It is the most common cause of acute surgical abdomen worldwide, with peak incidence in the 10-30 age group.\n\nClassic presentation begins with periumbilical pain migrating to the right lower quadrant (McBurney\'s point). Appendectomy is the definitive treatment; delayed diagnosis risks perforation, abscess, or peritonitis.',
+            symptoms:[{n:'Right lower abdominal pain',w:98},{n:'Pain migration (periumbilical → RLQ)',w:85},{n:'Nausea & vomiting',w:75},{n:'Loss of appetite',w:80},{n:'Low-grade fever',w:65},{n:'Rebound tenderness',w:72},{n:'Abdominal rigidity',w:55}],
+            meds:['Appendectomy — Definitive surgical treatment (laparoscopic preferred)','Cefazolin + Metronidazole — Perioperative antibiotic prophylaxis','IV Fluids — Resuscitation and hydration pre-surgery','Morphine / Ketorolac — Pain management','NPO status — Nil per os before surgical intervention']},
+        { id:'meningitis', emoji:'🧬', name:'Meningitis', category:'Infectious', desc:'Meningitis is inflammation of the protective membranes (meninges) covering the brain and spinal cord. It can be caused by bacteria, viruses, or fungi, with bacterial meningitis being the most dangerous form.\n\nClassic triad: headache, fever, and neck stiffness. Bacterial meningitis requires immediate empiric IV antibiotics. Lumbar puncture with CSF analysis is the definitive diagnostic test.',
+            symptoms:[{n:'Severe headache',w:95},{n:'Neck stiffness',w:92},{n:'High fever',w:90},{n:'Photophobia',w:78},{n:'Nausea & vomiting',w:70},{n:'Altered consciousness',w:65},{n:'Petechial rash (bacterial)',w:55}],
+            meds:['Ceftriaxone — Empiric IV antibiotic for bacterial meningitis','Vancomycin — Added for MRSA and penicillin-resistant coverage','Dexamethasone — Corticosteroid to reduce inflammation and complications','Acyclovir — If viral (HSV) meningitis suspected','Prophylactic Rifampin — For close contacts of meningococcal cases']},
+        { id:'strep', emoji:'😮', name:'Strep Throat', category:'Infectious', desc:'Streptococcal pharyngitis is a bacterial infection of the pharynx and tonsils caused by Group A Streptococcus (GAS). It accounts for approximately 15-30% of pharyngitis cases in children.\n\nDiagnosis is confirmed by rapid antigen detection test (RADT) or throat culture. Treatment with penicillin or amoxicillin prevents rheumatic fever and reduces transmission. Symptomatic relief includes analgesics and throat lozenges.',
+            symptoms:[{n:'Severe sore throat',w:95},{n:'Pain on swallowing',w:90},{n:'Fever',w:82},{n:'Red, swollen tonsils',w:85},{n:'White patches on tonsils',w:75},{n:'Swollen lymph nodes',w:70},{n:'Headache',w:50}],
+            meds:['Penicillin V — First-line antibiotic, 10-day course','Amoxicillin — Alternative first-line, better taste for children','Azithromycin — For penicillin-allergic patients (5-day course)','Acetaminophen/Ibuprofen — Pain and fever management','Throat lozenges — Topical symptom relief']},
+        { id:'anxiety', emoji:'😰', name:'Anxiety Disorder', category:'Psychiatric', desc:'Generalized anxiety disorder (GAD) is characterized by persistent and excessive worry about various things that is difficult to control. It affects approximately 6.8 million adults in the US.\n\nAnxiety can trigger genuine physical symptoms through the autonomic nervous system (sympathetic activation). Treatment combines cognitive behavioral therapy (CBT) with pharmacotherapy (SSRIs, SNRIs, or benzodiazepines for acute episodes).',
+            symptoms:[{n:'Excessive worry',w:95},{n:'Restlessness',w:85},{n:'Rapid heartbeat',w:78},{n:'Difficulty breathing',w:70},{n:'Muscle tension',w:72},{n:'Insomnia',w:68},{n:'Trembling / shaking',w:55},{n:'Difficulty concentrating',w:65}],
+            meds:['Sertraline (Zoloft) — SSRI, first-line pharmacotherapy','Escitalopram (Lexapro) — SSRI with favorable side-effect profile','Venlafaxine (Effexor) — SNRI for anxiety and depression','Buspirone — Non-benzodiazepine anxiolytic','Cognitive Behavioral Therapy (CBT) — Gold standard psychotherapy']},
+        { id:'dehydration', emoji:'💧', name:'Dehydration', category:'Metabolic', desc:'Dehydration occurs when fluid loss exceeds fluid intake, leading to a deficit in total body water. It can result from inadequate intake, excessive sweating, vomiting, diarrhea, or excessive urination.\n\nMild to moderate dehydration can be managed with oral rehydration solutions (ORS). Severe dehydration requires IV fluid administration. Electrolyte imbalances (sodium, potassium) must be monitored and corrected.',
+            symptoms:[{n:'Extreme thirst',w:90},{n:'Dark-colored urine',w:88},{n:'Fatigue',w:75},{n:'Dizziness',w:72},{n:'Dry mouth & lips',w:85},{n:'Reduced urine output',w:80},{n:'Rapid heartbeat',w:55},{n:'Sunken eyes',w:50}],
+            meds:['Oral Rehydration Solution (ORS) — WHO formula with glucose and electrolytes','Normal Saline (0.9% NaCl) — IV for moderate-severe dehydration','Lactated Ringer solution — IV fluid with balanced electrolytes','Potassium supplementation — If hypokalemia detected','Anti-emetics — If vomiting is preventing oral rehydration']},
+        { id:'pneumonia', emoji:'🫁', name:'Pneumonia', category:'Respiratory', desc:'Pneumonia is an infection that inflames the air sacs (alveoli) in one or both lungs. It can be caused by bacteria (Streptococcus pneumoniae), viruses, or fungi.\n\nDiagnosis involves chest X-ray, sputum cultures, and blood tests. Community-acquired pneumonia (CAP) remains a leading cause of hospitalization and mortality. Treatment depends on etiology — antibiotics for bacterial, supportive care for viral.',
+            symptoms:[{n:'Productive cough',w:92},{n:'High fever with chills',w:88},{n:'Shortness of breath',w:85},{n:'Pleuritic chest pain',w:78},{n:'Rapid breathing',w:72},{n:'Fatigue',w:65},{n:'Confusion (in elderly)',w:50}],
+            meds:['Amoxicillin — First-line for mild community-acquired pneumonia','Azithromycin — Macrolide covering atypical pathogens','Ceftriaxone + Azithromycin — Inpatient combination therapy','Supplemental O2 — Maintains SpO2 >94%','Chest physiotherapy — Postural drainage and breathing exercises']},
+        { id:'bronchitis', emoji:'😤', name:'Bronchitis', category:'Respiratory', desc:'Bronchitis is inflammation of the bronchial tubes (bronchi) that carry air to the lungs. Acute bronchitis is usually caused by viral infections and resolves within 1-3 weeks.\n\nChronic bronchitis, defined as productive cough for ≥3 months in 2 consecutive years, is a component of COPD. Acute bronchitis is primarily managed with supportive care; antibiotics are not indicated unless bacterial superinfection is suspected.',
+            symptoms:[{n:'Persistent cough',w:95},{n:'Mucus production',w:88},{n:'Chest discomfort',w:70},{n:'Fatigue',w:65},{n:'Mild fever',w:50},{n:'Shortness of breath',w:55},{n:'Sore throat',w:45}],
+            meds:['Dextromethorphan — Cough suppressant for non-productive cough','Guaifenesin — Expectorant to thin mucus','Albuterol inhaler — Bronchodilator if wheezing present','Honey + warm fluids — Soothes throat and reduces cough','Antibiotics (only if bacterial) — Amoxicillin if superinfection confirmed']},
+        { id:'sinusitis', emoji:'👃', name:'Sinusitis', category:'ENT', desc:'Sinusitis is inflammation or infection of the paranasal sinuses, often following an upper respiratory infection. It is classified as acute (<4 weeks), subacute (4-12 weeks), or chronic (>12 weeks).\n\nBacterial sinusitis typically presents with symptoms lasting >10 days without improvement. Treatment includes nasal decongestants, saline irrigation, and antibiotics (amoxicillin-clavulanate) when bacterial etiology is suspected.',
+            symptoms:[{n:'Facial pressure/pain',w:95},{n:'Nasal congestion',w:92},{n:'Thick, discolored mucus',w:88},{n:'Loss of smell',w:72},{n:'Headache',w:68},{n:'Post-nasal drip',w:75},{n:'Cough',w:50}],
+            meds:['Amoxicillin-Clavulanate — First-line antibiotic for bacterial sinusitis','Fluticasone nasal spray — Intranasal corticosteroid','Saline nasal irrigation — Clears mucus and reduces swelling','Pseudoephedrine — Oral decongestant (short-term use)','Steam inhalation — Loosens mucus and relieves congestion']},
+        { id:'gerd', emoji:'🔥', name:'Acid Reflux (GERD)', category:'Gastrointestinal', desc:'Gastroesophageal reflux disease (GERD) occurs when stomach acid frequently flows back into the esophagus, causing mucosal irritation. It affects approximately 20% of the Western population.\n\nChronic GERD can lead to esophagitis, Barrett\'s esophagus, and increased risk of esophageal adenocarcinoma. Management includes lifestyle modifications (weight loss, meal timing), PPIs, and H2RAs. Surgery (fundoplication) is reserved for refractory cases.',
+            symptoms:[{n:'Heartburn',w:95},{n:'Acid regurgitation',w:90},{n:'Difficulty swallowing',w:60},{n:'Chest pain',w:55},{n:'Chronic cough',w:50},{n:'Lump sensation in throat',w:48},{n:'Bloating',w:45}],
+            meds:['Omeprazole (Prilosec) — Proton pump inhibitor, first-line therapy','Famotidine (Pepcid) — H2 receptor antagonist for milder cases','Antacids (Tums/Gaviscon) — Quick relief for occasional symptoms','Lifestyle modifications — Elevate head, avoid late meals, weight loss','Fundoplication surgery — For refractory GERD cases']},
+        { id:'vertigo', emoji:'🌀', name:'Vertigo', category:'Neurological', desc:'Vertigo is a sensation of spinning or movement when stationary. Benign paroxysmal positional vertigo (BPPV) is the most common cause, resulting from displaced calcium carbonate crystals (otoconia) in the semicircular canals.\n\nOther causes include Ménière\'s disease, vestibular neuritis, and central disorders. Diagnosis involves the Dix-Hallpike maneuver for BPPV. The Epley maneuver is highly effective for BPPV treatment.',
+            symptoms:[{n:'Spinning sensation',w:98},{n:'Loss of balance',w:88},{n:'Nausea & vomiting',w:78},{n:'Nystagmus',w:70},{n:'Hearing changes',w:45},{n:'Ear fullness',w:40},{n:'Headache',w:35}],
+            meds:['Epley maneuver — Canalith repositioning procedure for BPPV','Meclizine (Antivert) — Antihistamine for motion sickness/vertigo','Diazepam — Vestibular suppressant for acute episodes','Betahistine — For Ménière disease symptom management','Vestibular rehabilitation — Physical therapy exercises']},
+        { id:'anemia', emoji:'🩸', name:'Anemia', category:'Hematology', desc:'Anemia is a condition characterized by a deficiency of red blood cells or hemoglobin, leading to reduced oxygen delivery to tissues. Iron-deficiency anemia is the most common type worldwide, affecting ~1.2 billion people.\n\nDiagnosis involves CBC, peripheral blood smear, reticulocyte count, and iron studies. Treatment targets the underlying cause — iron supplementation for iron deficiency, B12 for pernicious anemia, EPO for chronic kidney disease.',
+            symptoms:[{n:'Fatigue & weakness',w:95},{n:'Pale skin/conjunctiva',w:88},{n:'Shortness of breath',w:75},{n:'Dizziness',w:72},{n:'Cold extremities',w:60},{n:'Rapid heartbeat',w:68},{n:'Brittle nails',w:50}],
+            meds:['Ferrous Sulfate 325mg — Oral iron supplement, taken with Vitamin C','IV Iron (Feraheme) — For patients intolerant to oral iron','Vitamin B12 injections — For pernicious/macrocytic anemia','Folic acid — For folate-deficiency anemia','Erythropoietin (EPO) — For anemia of chronic kidney disease']},
+        { id:'uti', emoji:'🚿', name:'UTI', category:'Urological', desc:'Urinary tract infections (UTIs) are bacterial infections of the urinary system, most commonly caused by Escherichia coli. They affect women significantly more than men due to shorter urethral length.\n\nUncomplicated UTIs are treated with short-course antibiotics (nitrofurantoin, TMP-SMX). Complicated or recurrent UTIs require culture-guided therapy and investigation for structural abnormalities. Adequate hydration and cranberry products may reduce recurrence.',
+            symptoms:[{n:'Painful urination (dysuria)',w:95},{n:'Frequent urination',w:90},{n:'Urgency',w:85},{n:'Cloudy/foul-smelling urine',w:78},{n:'Lower abdominal pain',w:70},{n:'Blood in urine (hematuria)',w:55},{n:'Fever (if upper UTI)',w:50}],
+            meds:['Nitrofurantoin (Macrobid) — First-line for uncomplicated UTI, 5-day course','TMP-SMX (Bactrim) — Alternative first-line antibiotic','Phenazopyridine (Pyridium) — Urinary analgesic for pain relief','Cephalexin — For UTI in pregnancy','Increased fluid intake — Flushes bacteria from urinary tract']},
+        { id:'diabetes', emoji:'💉', name:'Diabetes (Hyperglycemia)', category:'Endocrine', desc:'Diabetes mellitus is a metabolic disease characterized by chronic hyperglycemia resulting from defects in insulin secretion, action, or both. Type 2 accounts for ~90-95% of cases.\n\nLong-term complications include retinopathy, nephropathy, neuropathy, and cardiovascular disease. Management includes lifestyle modification, metformin, insulin therapy, and regular HbA1c monitoring (target <7%).',
+            symptoms:[{n:'Polyuria (frequent urination)',w:90},{n:'Polydipsia (excessive thirst)',w:88},{n:'Unexplained weight loss',w:75},{n:'Blurred vision',w:60},{n:'Fatigue',w:70},{n:'Slow-healing wounds',w:55},{n:'Tingling in extremities',w:50}],
+            meds:['Metformin — First-line oral hypoglycemic, decreases hepatic glucose','Insulin (Basal-Bolus) — For Type 1 and advanced Type 2 diabetes','Semaglutide (Ozempic) — GLP-1 agonist, improves glycemia + weight loss','Empagliflozin (Jardiance) — SGLT2 inhibitor with cardiovascular benefits','Dietary management — Low GI diet with controlled carbohydrate intake']},
+        { id:'pe', emoji:'🫀', name:'Pulmonary Embolism', category:'Cardiovascular', desc:'Pulmonary embolism (PE) is a blockage of a pulmonary artery by a blood clot, usually originating from deep vein thrombosis (DVT) in the lower extremities. It is a life-threatening emergency.\n\nDiagnosis involves CT pulmonary angiography (CTPA) and D-dimer testing. Treatment includes anticoagulation (heparin, warfarin, DOACs) and thrombolysis for massive PE. Risk factors include immobility, surgery, malignancy, and hormonal therapy.',
+            symptoms:[{n:'Sudden shortness of breath',w:95},{n:'Sharp chest pain (pleuritic)',w:90},{n:'Rapid heart rate',w:82},{n:'Cough (may be bloody)',w:60},{n:'Leg swelling (DVT)',w:55},{n:'Anxiety',w:50},{n:'Dizziness/fainting',w:65}],
+            meds:['Heparin (unfractionated) — Immediate IV anticoagulation','Enoxaparin (Lovenox) — Low molecular weight heparin','Rivaroxaban (Xarelto) — Oral DOAC for long-term anticoagulation','Alteplase (tPA) — Thrombolysis for massive/hemodynamically unstable PE','IVC filter — For patients with contraindication to anticoagulation']},
+        { id:'fibro', emoji:'🦋', name:'Fibromyalgia', category:'Rheumatology', desc:'Fibromyalgia is a chronic disorder characterized by widespread musculoskeletal pain, fatigue, and cognitive difficulties. It affects approximately 2-8% of the population, with a higher prevalence in women.\n\nThe exact pathophysiology involves central sensitization — augmented pain processing in the CNS. Management combines pharmacotherapy (duloxetine, pregabalin, milnacipran) with exercise, CBT, and patient education.',
+            symptoms:[{n:'Widespread body pain',w:95},{n:'Chronic fatigue',w:90},{n:'Cognitive difficulties (fibro fog)',w:82},{n:'Sleep disturbances',w:85},{n:'Headaches',w:65},{n:'Morning stiffness',w:72},{n:'Depression',w:60}],
+            meds:['Duloxetine (Cymbalta) — SNRI, FDA-approved for fibromyalgia','Pregabalin (Lyrica) — Anticonvulsant, reduces nerve pain signals','Milnacipran (Savella) — SNRI specifically for fibromyalgia','Regular aerobic exercise — 30 min/day moderate exercise','Cognitive Behavioral Therapy — Addresses pain coping strategies']},
+        { id:'dengue', emoji:'🦟', name:'Dengue Fever', category:'Vector-Borne', desc:'Dengue fever is a mosquito-borne tropical disease caused by the dengue virus, transmitted by Aedes aegypti mosquitoes. It affects millions annually in tropical and subtropical regions.\n\nSevere dengue (hemorrhagic fever) involves plasma leakage, fluid accumulation, and organ impairment. NSAIDs are contraindicated due to bleeding risk. Platelet monitoring and IV fluid resuscitation are critical in severe cases.',
+            symptoms:[{n:'High-grade fever (40°C)',w:98},{n:'Severe retro-orbital headache',w:85},{n:'Joint & bone pain ("breakbone")',w:92},{n:'Skin rash (petechiae)',w:65},{n:'Nausea & vomiting',w:70},{n:'Low platelet count',w:90},{n:'Fatigue',w:75}],
+            meds:['Paracetamol ONLY — For fever; NSAIDs/Aspirin contraindicated','IV Fluid Resuscitation — Isotonic crystalloids for plasma volume','Platelet transfusion — If count drops below 10,000/µL','Oral Rehydration Salts — Maintains hydration during febrile phase','ICU monitoring — For severe dengue with warning signs']}
+    ];
+
+    // ========== DIRECTORY LOGIC ==========
+    const dirPane = document.getElementById('dirPane');
+    const searchInput = document.getElementById('dirSearch');
+    let currentIdx = -1;
+
+    function renderDirectory(filterText = '') {
+        const dirPane = document.getElementById('dirPane');
+        if (!dirPane) return;
+        
+        dirPane.innerHTML = '';
+        const search = filterText.toLowerCase().trim();
+
+        // Group by category
+        const filteredGroups = {};
+        DISEASES.forEach((d, i) => {
+            const matchName = d.name.toLowerCase().includes(search);
+            const matchSymptom = d.symptoms && d.symptoms.some(s => s.n.toLowerCase().includes(search));
+            
+            if (matchName || matchSymptom) {
+                if (!filteredGroups[d.category]) filteredGroups[d.category] = [];
+                filteredGroups[d.category].push({ ...d, _index: i });
+            }
+        });
+
+        const sortedCats = Object.keys(filteredGroups).sort();
+        
+        if (sortedCats.length === 0) {
+            dirPane.innerHTML = `
+                <div style="padding: 2.5rem 1.5rem; text-align: center;">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.3;">🔍</div>
+                    <div style="font-size: 0.8rem; color: #475569;">No results for "${filterText}"</div>
+                </div>
+            `;
+            return;
+        }
+        
+        console.log("Rendering directory with", DISEASES.length, "items");
+
+        sortedCats.forEach(cat => {
+            // Category Header
+            const title = document.createElement('div');
+            title.className = 'dir-section-title';
+            title.textContent = cat;
+            dirPane.appendChild(title);
+
+            // Category Items
+            filteredGroups[cat].forEach(d => {
+                const item = document.createElement('div');
+                item.className = 'dir-item';
+                if (currentIdx === d._index) item.classList.add('active');
+                item.dataset.index = d._index;
+                
+                item.innerHTML = `
+                    <span class="dir-emoji">${d.emoji}</span>
+                    <div class="dir-info">
+                        <div class="dir-name">${d.name}</div>
+                        <div class="dir-cat">${d.category}</div>
+                    </div>
+                `;
+                
+                item.onclick = () => selectDisease(d._index);
+                dirPane.appendChild(item);
+            });
+        });
+    }
+
+    // INITIALIZATION
+    document.addEventListener('DOMContentLoaded', () => {
+        renderDirectory();
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                renderDirectory(e.target.value);
+            });
+        }
+    });
+
+    // SELECT DISEASE
+    const placeholderView = document.getElementById('placeholderView');
+    const diseaseDetail = document.getElementById('diseaseDetail');
+    const rightPlaceholder = document.getElementById('rightPlaceholder');
+    const symptomBody = document.getElementById('symptomBody');
+
+    function selectDisease(index) {
+        try {
+            if (index === currentIdx) return;
+            const d = DISEASES[index];
+            if (!d) return;
+            
+            currentIdx = index;
+            console.log("Selecting disease:", d.name);
+
+            // Update active dir item
+            document.querySelectorAll('.dir-item').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.index) === index);
+            });
+
+            // Start Transition
+            diseaseDetail.classList.remove('visible');
+            placeholderView.style.opacity = '0';
+            
+            setTimeout(() => {
+                placeholderView.style.display = 'none';
+                diseaseDetail.style.display = 'block';
+
+                // Populate content
+                document.getElementById('ddEmoji').textContent = d.emoji || '❓';
+                document.getElementById('ddName').textContent = d.name || 'Unknown Condition';
+                document.getElementById('ddCategory').textContent = d.category || 'Clinical';
+                document.getElementById('ddDesc').textContent = (d.desc || 'Summary currently unavailable.').replace(/\\n/g, '\n');
+
+                // Populate symptoms & meds
+                if (rightPlaceholder) rightPlaceholder.style.display = 'none';
+                populateSymptoms(d);
+                populateMeds(d);
+
+                // Stagger reset tabs
+                switchTab('symptoms');
+
+                // Force visibility
+                requestAnimationFrame(() => {
+                    diseaseDetail.classList.add('visible');
+                    diseaseDetail.style.opacity = '1'; // Safety force
+                });
+            }, 300);
+        } catch (err) {
+            console.error("Critical Render Error:", err);
+        }
+    }
+
+    function populateSymptoms(d) {
+        symptomBody.querySelectorAll('.symptom-item').forEach(el => el.remove());
+        d.symptoms.forEach((s, i) => {
+            const level = s.w >= 85 ? 'critical' : s.w >= 65 ? 'high' : s.w >= 45 ? 'med' : 'low';
+            const levelLabel = s.w >= 85 ? 'Critical' : s.w >= 65 ? 'Frequent' : s.w >= 45 ? 'Common' : 'Rare';
+            const item = document.createElement('div');
+            item.className = 'symptom-item';
+            item.innerHTML = `
+                <div class="symptom-dot ${level}"></div>
+                <div class="symptom-info">
+                    <div class="symptom-name">${s.n}</div>
+                    <div class="symptom-weight-bar">
+                        <div class="symptom-weight-fill ${level}" style="width: 0%;" data-w="${s.w}%"></div>
+                    </div>
+                    <div class="symptom-weight-label ${level}">${levelLabel}</div>
+                </div>
+            `;
+            symptomBody.appendChild(item);
+            setTimeout(() => {
+                item.classList.add('visible');
+                item.querySelector('.symptom-weight-fill').style.width = item.querySelector('.symptom-weight-fill').dataset.w;
+            }, 80 + i * 60);
+        });
+    }
+
+    const medsBody = document.getElementById('medsBody');
+    function populateMeds(d) {
+        medsBody.innerHTML = '';
+        if (!d.meds) return;
+        d.meds.forEach((m, i) => {
+            const parts = m.split(' — ');
+            const item = document.createElement('div');
+            item.className = 'symptom-item';
+            item.innerHTML = `
+                <div class="symptom-dot med" style="background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,0.4);"></div>
+                <div class="symptom-info">
+                    <div class="symptom-name" style="color:#e2e8f0;font-weight:600;">${parts[0]}</div>
+                    ${parts[1] ? '<div style="font-size:0.78rem;color:#64748b;margin-top:0.2rem;line-height:1.4;">' + parts[1] + '</div>' : ''}
+                </div>
+            `;
+            medsBody.appendChild(item);
+            setTimeout(() => item.classList.add('visible'), 80 + i * 60);
+        });
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.pane-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+        document.getElementById('symptomBody').classList.toggle('hidden', tab !== 'symptoms');
+        document.getElementById('medsBody').classList.toggle('hidden', tab !== 'medications');
+    }
+
+    // PARTICLES
+    const canvas = document.getElementById('labCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    function initParticles() {
+        particles = [];
+        for (let i = 0; i < 50; i++) {
+            particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+                r: Math.random()*1.2+0.3, sx: (Math.random()-0.5)*0.2, sy: (Math.random()-0.5)*0.2,
+                o: Math.random()*0.2+0.04 });
+        }
+    }
+    function drawParticles() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        particles.forEach(p => {
+            p.x+=p.sx; p.y+=p.sy;
+            if(p.x<0)p.x=canvas.width; if(p.x>canvas.width)p.x=0;
+            if(p.y<0)p.y=canvas.height; if(p.y>canvas.height)p.y=0;
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+            ctx.fillStyle=`rgba(56,189,248,${p.o})`; ctx.fill();
+        });
+        for(let i=0;i<particles.length;i++){
+            for(let j=i+1;j<particles.length;j++){
+                const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+                const d=Math.sqrt(dx*dx+dy*dy);
+                if(d<90){ ctx.beginPath(); ctx.strokeStyle=`rgba(56,189,248,${0.03*(1-d/90)})`;
+                    ctx.lineWidth=0.4; ctx.moveTo(particles[i].x,particles[i].y);
+                    ctx.lineTo(particles[j].x,particles[j].y); ctx.stroke(); }
+            }
+        }
+        requestAnimationFrame(drawParticles);
+    }
+    resize(); initParticles(); drawParticles();
+    addEventListener('resize',()=>{resize();initParticles();});
+    </script>
+</body>
+</html>

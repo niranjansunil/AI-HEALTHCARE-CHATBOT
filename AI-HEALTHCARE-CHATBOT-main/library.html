@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health A→Z: The Clinical Library</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #020617;
+            color: #FFFFFF;
+            overflow: hidden;
+            height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== BACKGROUND ===== */
+        .bg-canvas {
+            position: fixed; inset: 0; z-index: 0;
+            background: radial-gradient(circle at 50% 50%, #03081c 0%, #020617 100%);
+        }
+
+        /* ===== LAYOUT ===== */
+        .library-wrapper {
+            position: relative; z-index: 10;
+            height: 100vh; display: flex; flex-direction: column;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        /* Top Header */
+        .lib-header {
+            padding: 4rem 2rem 2rem; text-align: center;
+            flex-shrink: 0; transition: transform 0.8s ease;
+        }
+        .lib-header h1 {
+            font-family: 'Outfit'; font-size: 3.5rem; font-weight: 900;
+            color: #FFFFFF; letter-spacing: -0.015em; line-height: 1;
+        }
+
+        /* Scrollable Bookmark Rail */
+        .rail-container {
+            width: 100%; overflow-x: auto; padding: 1.5rem 0;
+            display: flex; justify-content: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            scrollbar-width: none; flex-shrink: 0;
+            transition: transform 0.6s ease, opacity 0.5s;
+        }
+        .rail-container::-webkit-scrollbar { display: none; }
+        
+        .bookmark-rail {
+            display: flex; gap: 1.25rem; padding: 0 3rem;
+        }
+        .letter-btn {
+            font-family: 'Outfit'; font-size: 1.2rem; font-weight: 700;
+            color: #64748b; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 32px; text-align: center; position: relative;
+        }
+        .letter-btn:hover { color: #38bdf8; transform: scale(1.4) translateY(-2px); }
+        .letter-btn.active { color: #38bdf8; }
+        .letter-btn.active::after {
+            content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 4px; border-radius: 50%; background: #38bdf8;
+        }
+
+        /* MAIN STAGE */
+        .main-stage {
+            flex: 1; position: relative; overflow-y: auto; overflow-x: hidden;
+            display: flex; flex-direction: column; align-items: center;
+            scroll-behavior: smooth;
+        }
+        .main-stage::-webkit-scrollbar { width: 5px; }
+        .main-stage::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.2); border-radius: 10px; }
+
+        /* Article List (Grid) */
+        .article-mosaic {
+            width: 100%; max-width: 1000px; padding: 4rem 2rem;
+            display: grid; grid-template-columns: 1fr; gap: 3rem;
+            transition: opacity 0.5s, transform 0.6s;
+        }
+
+        .journal-preview {
+            cursor: pointer; padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            transition: all 0.4s;
+        }
+        .journal-preview:hover { transform: translateX(10px); }
+        .journal-preview h2 {
+            font-family: 'Outfit'; font-size: 1.8rem; font-weight: 800;
+            color: #FFFFFF; margin-bottom: 0.75rem; transition: color 0.3s;
+        }
+        .journal-preview:hover h2 { color: #38bdf8; }
+        .journal-preview p {
+            font-size: 1.1rem; color: #94a3b8; line-height: 1.6;
+            max-width: 800px; text-align: justify;
+        }
+
+        /* Full Journal View */
+        .full-journal-view {
+            width: 100%; max-width: 800px; padding: 5rem 2.5rem 10rem;
+            display: none; opacity: 0; transform: translateY(40px);
+            transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .full-journal-view.active { display: block; opacity: 1; transform: translateY(0); }
+
+        .back-to-lib {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            color: #38bdf8; font-size: 0.9rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            cursor: pointer; margin-bottom: 3rem;
+            transition: gap 0.3s;
+        }
+        .back-to-lib:hover { gap: 0.75rem; }
+
+        /* TYPOGRAPHY */
+        .article-title { font-family: 'Outfit'; font-size: 3.2rem; font-weight: 900; line-height: 1.1; margin-bottom: 2.5rem; }
+        .article-body { font-size: 1.15rem; color: #FFFFFF; line-height: 1.9; text-align: justify; }
+        .article-body strong { color: #38bdf8; font-weight: 700; }
+        .article-body em { color: #cbd5e1; font-style: italic; }
+        .article-body h3 { 
+            font-family: 'Outfit'; font-size: 1.5rem; font-weight: 800; 
+            margin: 3.5rem 0 1.25rem; color: #FFFFFF;
+            border-bottom: 2px solid rgba(56,189,248,0.2); display: inline-block; padding-bottom: 0.2rem;
+        }
+        .article-body p { margin-bottom: 1.75rem; }
+
+        /* FOCUS MODE TRANSITIONS */
+        .focus-mode .lib-header { transform: translateY(-30px) scale(0.95); opacity: 0.3; }
+        .focus-mode .rail-container { transform: translateY(-50px); opacity: 0; pointer-events: none; }
+        .focus-mode .article-mosaic { display: none; }
+
+        /* EXIT PORTAL */
+        .exit-portal {
+            position: fixed; top: 1.5rem; right: 2rem; z-index: 100;
+            color: rgba(255,255,255,0.4); text-decoration: none;
+            font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.15em; border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.3s;
+        }
+        .exit-portal:hover { color: #FFFFFF; border-color: rgba(56,189,248,0.5); background: rgba(56,189,248,0.05); }
+
+    </style>
+</head>
+<body>
+    <div class="bg-canvas"></div>
+    <a href="landing.html" class="exit-portal">Exit Clinical Portal</a>
+
+    <div class="library-wrapper" id="libWrapper">
+        <header class="lib-header">
+            <h1 id="mainTitle">Health A→Z: The Clinical Library</h1>
+        </header>
+
+        <div class="rail-container" id="railContainer">
+            <div class="bookmark-rail" id="bookmarkRail">
+                <!-- LETTERS A-Z -->
+            </div>
+        </div>
+
+        <div class="main-stage" id="mainStage">
+            <div class="article-mosaic" id="mosaicGrid">
+                <!-- LIST OF JOURNALS -->
+            </div>
+
+            <div class="full-journal-view" id="fullView">
+                <div class="back-to-lib" onclick="closeJournal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back to Archive
+                </div>
+                <div id="journalContainer">
+                    <!-- FULL ARTICLE CONTENT -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const JOURNALS = {
+            'A': [
+                {
+                    title: 'Anaemia & Hemoglobin Dynamics',
+                    summary: 'A study on how reduced RBC count affects systemic oxygenation and its detection via MCH/MCV markers.',
+                    content: `
+                        <h2 class="article-title">Anaemia & Hemoglobin Dynamics</h2>
+                        <div class="article-body">
+                            <p><strong>Anaemia</strong> occurs when the number of healthy red blood cells (<em>RBCs</em>) or the concentration of hemoglobin is insufficient to meet the body's physiological needs. This impairment leads to decreased oxygen carriage, manifesting as fatigue and systemic hypoxia.</p>
+                            <h3>Hematological Indices</h3>
+                            <p>Modern clinical investigation relies heavily on <strong>MCV (Mean Corpuscular Volume)</strong> and <strong>MCH (Mean Corpuscular Hemoglobin)</strong>. These indices allow clinicians to categorize anaemia into <em>microcytic</em>, <em>normocytic</em>, or <em>macrocytic</em> variants.</p>
+                            <p>In cases of iron deficiency, the RBCs present as microcytic and hypochromic. The HEAL logic engine prioritizes these markers to generate a high-precision diagnostic confidence level for hematological disorders.</p>
+                        </div>
+                    `
+                }
+            ],
+            'B': [
+                {
+                    title: 'Bacterial Pathogenesis',
+                    summary: 'Analyzing the inflammatory response and the elevation of White Blood Cell (WBC) counts in acute infections.',
+                    content: `
+                        <h2 class="article-title">Bacterial Pathogenesis</h2>
+                        <div class="article-body">
+                            <p>The invasion of <strong>pathogenic bacteria</strong> triggers a complex immune cascade characterized by systemic inflammation and <em>leukocytosis</em>. The body elevates its <strong>WBC count</strong> significantly to combat the proliferation of foreign microorganisms.</p>
+                            <h3>Inflammatory Markers</h3>
+                            <p>Beyond simple WBC elevation, the <em>differential count</em> reveals critical data. An increase in <strong>Neutrophils</strong> typically points toward a bacterial etiology, whereas lymphocytic shifts may suggest viral involvement.</p>
+                        </div>
+                    `
+                }
+            ],
+            'C': [
+                {
+                    title: 'Cardiovascular Arrhythmia',
+                    summary: 'Research into irregular heart rhythms and the physiological impact of electrolyte imbalances on the sinoatrial node.',
+                    content: `<h2 class="article-title">Cardiovascular Arrhythmia</h2><div class="article-body"><p>Disruptions in the heart's electrical conduction system manifest as <strong>Arrhythmias</strong>. The <em>Sinoatrial Node</em>, often referred to as the heart's natural pacemaker, is highly sensitive to the concentration of extracellular ions.</p><h3>Ion Channel Dynamics</h3><p>Imbalances in <strong>Potassium (K+)</strong> and <strong>Calcium (Ca2+)</strong> can trigger aberrant electrical signals, leading to <em>Tachycardia</em> or <em>Bradycardia</em>. Clinicians must monitor these electrolyte levels closely to prevent life-threatening cardiac events.</p></div>`
+                }
+            ],
+            'E': [
+                {
+                    title: 'Electrolyte Homeostasis',
+                    summary: 'A clinical journal on the balance of Sodium, Potassium, and Calcium in maintaining neural and muscular function.',
+                    content: `<h2 class="article-title">Electrolyte Homeostasis</h2><div class="article-body"><p>The Precise regulation of <strong>Electrolytes</strong> is essential for the transmission of nerve impulses and muscle contractions. <strong>Sodium (Na+)</strong>, <strong>Potassium (K+)</strong>, and <strong>Magnesium (Mg2+)</strong> act as the messengers of the chemical signaling system.</p><h3>Neural Impact</h3><p><em>Hyponatremia</em> or <em>Hyperkalemia</em> can result in severe neurological dysfunction, ranging from confusion to muscular paralysis or cardiac arrest.</p></div>`
+                }
+            ],
+            'G': [
+                {
+                    title: 'Gastritis & Mucosal Inflammation',
+                    summary: 'Investigating the triggers of gastric lining erosion and the role of H. pylori in chronic abdominal discomfort.',
+                    content: `<h2 class="article-title">Gastritis & Mucosal Inflammation</h2><div class="article-body"><p><strong>Gastritis</strong> is the inflammation or erosion of the stomach's protective lining. While dietary factors play a role, the presence of <em>Helicobacter pylori</em> remains a primary cause of chronic mucosal distress.</p><h3>The Role of Acid</h3><p>Excess <em>Hydrochloric Acid</em> production leads to further degradation of the protective barrier, potentially resulting in <strong>Peptic Ulcers</strong> if left untreated.</p></div>`
+                }
+            ],
+            'M': [
+                {
+                    title: 'Malaria: Plasmodium Lifecycle',
+                    summary: 'A deep dive into the parasitic invasion of erythrocytes and the resulting cyclical fever patterns observed in patients.',
+                    content: `<h2 class="article-title">Malaria: Plasmodium Lifecycle</h2><div class="article-body"><p><strong>Malaria</strong> is caused by the <em>Plasmodium</em> parasite, which infects host erythrocytes. The rupture of these cells during the parasitic reproductive cycle causes the distinctive <strong>cyclical paroxysms</strong> of high fever and chills.</p><h3>Hematological Sequestration</h3><p>The parasite alters the surface of red blood cells, causing them to adhere to vascular walls, a process known as <em>sequestration</em>, which can lead to severe organ damage in cerebral malaria cases.</p></div>`
+                }
+            ],
+            'R': [
+                {
+                    title: 'Respiratory Acidosis',
+                    summary: 'An analysis of carbon dioxide retention in the blood and its correlation with decreased lung function and pH imbalance.',
+                    content: `<h2 class="article-title">Respiratory Acidosis</h2><div class="article-body"><p>When the lungs fail to efficiently clear <strong>Carbon Dioxide (CO2)</strong>, the resulting build-up leads to a decrease in blood pH, a condition known as <strong>Respiratory Acidosis</strong>.</p><h3>Lung Function Correlation</h3><p>Chronic conditions like <em>COPD</em> or acute states like severe <em>Pneumonia</em> are common precursors. The body's inability to exhale CO2 shifts the <em>carbonic acid-bicarbonate</em> buffer system toward acidity.</p></div>`
+                }
+            ],
+            'T': [
+                {
+                    title: 'Thrombocytopenia Indices',
+                    summary: 'Technical journal focusing on Platelet deficiency, specifically its role as a primary biomarker for Dengue and other viral hemorrhages.',
+                    content: `
+                        <h2 class="article-title">Thrombocytopenia Indices</h2>
+                        <div class="article-body">
+                            <p><strong>Thrombocytopenia</strong> is a clinical state characterized by an abnormally low <strong>Platelet count</strong>, typically defined as < 150,000/µL. In viral infections like <em>Dengue</em>, it is a hallmark sign of disease progression.</p>
+                            <h3>Pathognomonic Signals</h3>
+                            <p>The HEAL logic engine monitors the rate of platelet decline as a <em>predictive biomarker</em> for hemorrhagic risk. A rapid drop often necessitates aggressive hydration and careful monitoring for capillary leak syndrome.</p>
+                        </div>
+                    `
+                }
+            ],
+            'U': [
+                {
+                    title: 'Uremia & Renal Filtration',
+                    summary: 'A study on the accumulation of nitrogenous waste in the blood due to impaired kidney function.',
+                    content: `<h2 class="article-title">Uremia & Renal Filtration</h2><div class="article-body"><p><strong>Uremia</strong> results from the failure of the kidneys to filter nitrogenous waste products from the blood. Elevated levels of <strong>BUN (Blood Urea Nitrogen)</strong> and <em>Creatinine</em> are the primary diagnostic indicators.</p><h3>Clinical Consequences</h3><p>Accumulated toxins can affect multiple systems, leading to <em>Encephalopathy</em>, uremic frost on the skin, and systemic metabolic acidosis.</p></div>`
+                }
+            ],
+            'V': [
+                {
+                    title: 'Viral Load & Immune Response',
+                    summary: 'Examining the behavior of lymphocytes during viral replication and the subsequent "cytokine storm" in severe cases.',
+                    content: `<h2 class="article-title">Viral Load & Immune Response</h2><div class="article-body"><p>In severe viral infections, an over-activation of the immune system can lead to a <strong>Cytokine Storm</strong>. This hyper-inflammatory state causes widespread tissue damage and organ failure.</p><h3>Lymphocytic Behavior</h3><p>During initial replication, <em>T-lymphocytes</em> and <em>Natural Killer cells</em> target infected host cells. A failure to control the viral load can lead to the exhaustion of these critical immune mediators.</p></div>`
+                }
+            ],
+            'W': [
+                {
+                    title: 'White Cell Differential',
+                    summary: 'A comprehensive guide to Neutrophils, Lymphocytes, and Eosinophils as diagnostic indicators for allergy vs. infection.',
+                    content: `<h2 class="article-title">White Cell Differential</h2><div class="article-body"><p>The <strong>Full Blood Count (FBC)</strong> becomes a treasure trove of diagnostic data when examining the <em>Differential</em>. Each subtype of white cell reveals a different clue about the patient's state.</p><h3>Diagnostic Clues</h3><p>High <strong>Neutrophils</strong> suggest bacterial invasion, whereas elevated <strong>Eosinophils</strong> are pathognomonic for <em>allergic reactions</em> or parasitic infestations. Lymphocytic shifts often indicate a viral pathology.</p></div>`
+                }
+            ],
+            'X': [
+                {
+                    title: 'Xerostomia & Systemic Dehydration',
+                    summary: 'Clinical research into the causes of dry mouth and its link to underlying metabolic disorders.',
+                    content: `<h2 class="article-title">Xerostomia & Systemic Dehydration</h2><div class="article-body"><p><strong>Xerostomia</strong>, or subjective dry mouth, is more than a local symptom; it is often a sign of <strong>Systemic Dehydration</strong> or metabolic imbalance such as <em>uncontrolled diabetes</em>.</p><h3>Salivary Hypofunction</h3><p>The reduction in saliva flow impacts oral flora and digestion. Clinically, it often indicates a deficit in total body water or an adverse reaction to anticholinergic medications.</p></div>`
+                }
+            ],
+            'Y': [
+                {
+                    title: 'Yellow Fever Pathology',
+                    summary: 'A journal on the flavivirus impact on hepatic function, leading to jaundice and coagulation complications.',
+                    content: `<h2 class="article-title">Yellow Fever Pathology</h2><div class="article-body"><p><strong>Yellow Fever</strong> is characterized by its significant impact on the liver. The <em>Flavivirus</em> targets hepatocytes, leading to severe <strong>Jaundice</strong>—the yellowing of the skin and eyes that gives the disease its name.</p><h3>Coagulation Failure</h3><p>Hepatic damage disrupts the production of <em>clotting factors</em>, resulting in severe hemorrhagic complications and multisystem organ failure in the toxic phase of the disease.</p></div>`
+                }
+            ]
+        };
+
+        const rail = document.getElementById('bookmarkRail');
+        const mosaic = document.getElementById('mosaicGrid');
+        const fullView = document.getElementById('fullView');
+        const container = document.getElementById('journalContainer');
+        const libWrapper = document.getElementById('libWrapper');
+
+        // Create A-Z buttons
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(char => {
+            const btn = document.createElement('div');
+            btn.className = 'letter-btn';
+            btn.textContent = char;
+            btn.onclick = () => selectLetter(char, btn);
+            rail.appendChild(btn);
+        });
+
+        function selectLetter(letter, el) {
+            document.querySelectorAll('.letter-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+
+            mosaic.style.opacity = '0';
+            setTimeout(() => {
+                mosaic.innerHTML = '';
+                const data = JOURNALS[letter] || [
+                    { title: `Journal ${letter}: In Progress`, summary: `Detailed clinical research for subjects under the index "${letter}" is currently being synchronized with our medical database.` }
+                ];
+                
+                data.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'journal-preview';
+                    card.innerHTML = `<h2>${item.title}</h2><p>${item.summary}</p>`;
+                    card.onclick = () => openJournal(item);
+                    mosaic.appendChild(card);
+                });
+                mosaic.style.opacity = '1';
+                document.getElementById('mainStage').scrollTo(0, 0);
+            }, 300);
+        }
+
+        function openJournal(item) {
+            if (!item.content) {
+                container.innerHTML = `
+                    <h2 class="article-title">${item.title}</h2>
+                    <div class="article-body"><p>${item.summary}</p><p><em>This journal is currently awaiting clinical peer review. Please check back later for the full text.</em></p></div>
+                `;
+            } else {
+                container.innerHTML = item.content;
+            }
+
+            libWrapper.classList.add('focus-mode');
+            fullView.style.display = 'block';
+            setTimeout(() => fullView.classList.add('active'), 50);
+            document.getElementById('mainStage').scrollTo(0, 0);
+        }
+
+        function closeJournal() {
+            fullView.classList.remove('active');
+            setTimeout(() => {
+                fullView.style.display = 'none';
+                libWrapper.classList.remove('focus-mode');
+            }, 500);
+        }
+
+        // Initialize with 'A'
+        window.onload = () => {
+            selectLetter('A', document.querySelector('.letter-btn'));
+        };
+
+    </script>
+</body>
+</html>

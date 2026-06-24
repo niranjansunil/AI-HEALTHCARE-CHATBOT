@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Pinpoint Dashboard - AI Healthcare Assistant</title>
+    <meta name="description" content="Lab-enhanced clinical diagnostic pinpointing results powered by AI.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pinpoint-styles.css">
+</head>
+<body>
+    <div class="pinpoint-container">
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+            <div class="brand">
+                <span class="brand-icon">🏥</span>
+                <span class="brand-name">AI Healthcare Assistant</span>
+                <span class="brand-badge">Clinical Intelligence</span>
+            </div>
+            <div class="report-meta" id="report-meta">
+                <span class="meta-tag meta-lab" id="lab-name-tag">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    Verifying...
+                </span>
+                <span class="meta-tag meta-date" id="report-date-tag">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    --/--/----
+                </span>
+                <span class="meta-tag meta-recency" id="recency-tag" style="display:none;">Historical Data</span>
+            </div>
+            <button class="close-btn" onclick="window.location.href='index.html'" title="New Analysis">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </header>
+
+        <!-- ============================
+             HERO: DIAGNOSTIC CONFIDENCE (CENTERED)
+             ============================ -->
+        <section class="hero-diagnosis glass-panel" id="hero-section">
+            <div class="hero-top">
+                <span class="category-label" id="disease-category">Analyzing...</span>
+                <div class="urgency-badge" id="urgency-badge">Stable</div>
+            </div>
+
+            <div class="confidence-circle">
+                <svg viewBox="0 0 120 120" id="confidence-svg">
+                    <defs>
+                        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#357ABD;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="bg-ring" cx="60" cy="60" r="52"></circle>
+                    <circle class="progress-ring" cx="60" cy="60" r="52" id="confidence-bar"></circle>
+                </svg>
+                <div class="confidence-value">
+                    <span id="confidence-pct">0</span><span class="unit">%</span>
+                </div>
+            </div>
+            <div class="confidence-label">Diagnostic Confidence</div>
+
+            <h1 class="disease-title" id="disease-name">Processing Report</h1>
+
+            <!-- The "Why" Box — right under the title -->
+            <div class="why-box" id="why-box">
+                <div class="why-header">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+                    </svg>
+                    <span>Clinical Reasoning</span>
+                </div>
+                <p id="logic-text">The engine is processing your clinical data...</p>
+            </div>
+        </section>
+
+        <!-- ============================
+             SPLIT: PRECAUTIONS (LEFT) + VITALS (RIGHT)
+             ============================ -->
+        <div class="split-bottom">
+            <!-- LEFT: Precautions & Suggested Tests -->
+            <section class="left-panel glass-panel" id="precautions-panel">
+                <!-- Precautions -->
+                <div class="precautions-col">
+                    <h2 class="section-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Medical Precautions
+                    </h2>
+                    <ul class="precautions-list" id="precautions-list">
+                        <li>Loading precautions...</li>
+                    </ul>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Suggested Tests -->
+                <div class="tests-col">
+                    <h2 class="section-title">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        Suggested Follow-up Tests
+                    </h2>
+                    <ul class="tests-list" id="tests-list">
+                        <li>Loading suggestions...</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- RIGHT: Analysed Vitals Table -->
+            <section class="right-panel glass-panel" id="vitals-panel">
+                <div class="vitals-header">
+                    <h2>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        Analysed Report Values
+                    </h2>
+                    <p>Extracted values vs. Clinical reference ranges</p>
+                </div>
+
+                <div class="vitals-table-container">
+                    <table class="vitals-table">
+                        <thead>
+                            <tr>
+                                <th>Marker</th>
+                                <th>Result</th>
+                                <th>Reference Range</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vitals-body">
+                            <tr><td colspan="4" class="loading-cell">Extracting biomarkers...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- Hospital Finder Section -->
+        <section class="hospital-finder glass-panel" id="hospital-finder-section">
+            <div class="finder-header">
+                <div class="finder-icon-wrap">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 7v4M10 9h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="finder-title">Find Hospitals Near You</h2>
+                    <p class="finder-subtitle">Select your district to discover top-rated hospitals in Kerala</p>
+                </div>
+            </div>
+
+            <!-- District Dropdown -->
+            <div class="district-dropdown-wrap">
+                <label for="district-select" class="district-label">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="2" fill="none"/>
+                    </svg>
+                    Select District
+                </label>
+                <div class="district-select-container">
+                    <select id="district-select" class="district-select">
+                        <option value="">— Choose a District —</option>
+                        <option value="thiruvananthapuram">Thiruvananthapuram</option>
+                        <option value="kollam">Kollam</option>
+                        <option value="pathanamthitta">Pathanamthitta</option>
+                        <option value="alappuzha">Alappuzha</option>
+                        <option value="kottayam">Kottayam</option>
+                        <option value="idukki">Idukki</option>
+                        <option value="ernakulam">Ernakulam</option>
+                        <option value="thrissur">Thrissur</option>
+                        <option value="palakkad">Palakkad</option>
+                        <option value="malappuram">Malappuram</option>
+                        <option value="kozhikode">Kozhikode</option>
+                        <option value="wayanad">Wayanad</option>
+                        <option value="kannur">Kannur</option>
+                        <option value="kasaragod">Kasaragod</option>
+                    </select>
+                    <svg class="select-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Hospital Cards Container -->
+            <div class="hospital-cards-container" id="hospital-cards">
+                <div class="hospital-placeholder" id="hospital-placeholder">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.3">
+                        <path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 7v4M10 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <p>Select a district above to view top hospitals</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Footer -->
+        <div class="action-footer">
+            <button class="secondary-btn" onclick="window.print()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Export Report
+            </button>
+            <button class="primary-btn" onclick="window.location.href='results.html'">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Analysis
+            </button>
+            <button class="primary-btn accent" onclick="window.location.href='index.html'">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New Analysis
+            </button>
+        </div>
+
+        <!-- Footer Disclaimer -->
+        <footer class="dashboard-footer">
+            <p>⚠️ <strong>Disclaimer:</strong> This is an AI-assisted preliminary analysis. Always consult a qualified healthcare professional for accurate diagnosis and treatment.</p>
+        </footer>
+    </div>
+
+    <script src="pinpoint-script.js"></script>
+</body>
+</html>
